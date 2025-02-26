@@ -1,0 +1,56 @@
+{
+  "name": "@agentic-profile/express",
+  "version": "0.1.0",
+  "description": "Framework for a Node Express based service for AI Agents based on the Agentic Profile",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepare": "tsup",
+    "dev": "node local-node.js",
+    "build": "tsup",
+    "test": "jest"
+  },
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
+  "files": [
+    "dist",
+    "lambda-handler.js",
+    "local-node.js",
+    "README.md"
+  ],
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agentic-profile/agentic-profile-express.git"
+  },
+  "author": "Mike Prince",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agentic-profile/agentic-profile-express/issues"
+  },
+  "homepage": "https://github.com/agentic-profile/agentic-profile-express#readme",
+  "dependencies": {
+    "@agentic-profile/auth": "^0.1.3",
+    "@codegenie/serverless-express": "^4.15.0",
+    "@types/basic-auth": "^1.1.8",
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/moment-timezone": "^0.5.30",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.9.2",
+    "axios": "^1.7.9",
+    "basic-auth": "^2.0.1",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1",
+    "moment-timezone": "^0.5.44",
+    "morgan": "^1.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2",
+    "tsup": "^8.3.6"
+  }
+}
