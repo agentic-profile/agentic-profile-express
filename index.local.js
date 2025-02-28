@@ -9,6 +9,10 @@ import {
     setStorage
 } from './dist/index.js';   // simulate fetching from node package
 
+import {
+    handleAgentChatMessage
+} from "./dist/chat/index.js";
+
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -23,7 +27,8 @@ app.use("/", express.static(
 setStorage( new InMemoryStorage() );
 
 app.use("/v1", openRoutes({
-    status: { name: "Testing" }
+    status: { name: "Testing" },
+    handleAgentChatMessage
 }));
 
 const port = process.env.PORT || 3003;

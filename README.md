@@ -50,11 +50,13 @@ The easiest way to run this demo is locally.
 		"login":"/v1/agent-login"
 	}
 
-5. Sign the challenge and login.  (Make sure to replace the string after "yarn login" with the challenge from step 4)
+	NOTE: Copy the "challenge" from your server's response for the next step...
+
+5. Sign the challenge and login.  (Make sure to replace the string after "yarn login" with the challenge you got from step 4)
 
 	$ node test/agent-login "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
 
 6. Use the agent token (session key) to authenticate and generate a chat reply
 
-	$ yarn test/chat-reply "eyJpZCI6MSwic2Vzc2lvbktleSI6IkFJMmtKQ1BqRnBtNEc1W"
+	$ node test/chat-reply "eyJpZCI6MSwic2Vzc2lvbktleSI6IkFJMmtKQ1BqRnBtNEc1W"
 
