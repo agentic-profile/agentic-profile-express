@@ -4,7 +4,6 @@ import {
     UserId
 } from "../storage/models.js";
 import { ServerError } from "../util/net.js";
-import { AgentChatKeys } from "./chat/models.js";
 
 export async function ensureBalance( uid: UserId, actor?: Account ) {
     if( actor && uid == actor.uid ) {
@@ -22,22 +21,3 @@ export async function ensureBalance( uid: UserId, actor?: Account ) {
     else
         return user.credit;
 }
-
-/*
-export async function recordChatCost( { uid, canonicalUri }: AgentChatKeys, cost: number | undefined ) {
-    if( !cost )
-        return;
-
-    await updateDB(
-        "UPDATE users SET credit=credit-? WHERE uid=?",
-        [cost,uid],
-        "Failed to update user credit with inference cost"
-    );
-
-    await updateDB(
-        "UPDATE agent_chats SET cost=cost+? WHERE uid=? AND profile_uri=?",
-        [cost,uid,canonicalUri],
-        "Failed to update chat with inference cost"
-    ); 
-}
-*/

@@ -1,5 +1,7 @@
 import {
-	ClientAgentSession
+    CanonicalURI,
+    ChallengeRecord,
+    ClientAgentSession
 } from "@agentic-profile/auth";
 
 import {
@@ -7,16 +9,14 @@ import {
 	Storage,
 	UserId
 } from "./models.js";
-import {
-	AgentChatKeys
-} from "../agent/chat/models.js";
+import { AgentChatKeys } from "../chat/models.js";
 import { ServerError } from "../util/net.js";
 
 
 const accounts = new Map<string,Account>();
 
 let nextChallengeId = 1;
-const challenges = new Map<number,string>();
+const challenges = new Map<number,ChallengeRecord>();
 
 let nextSessionId = 1;
 const clientSessions = new Map<number,ClientAgentSession>();
@@ -26,7 +26,7 @@ export class InMemoryStorage implements Storage {
     	if( !cost )
     		return;	// nothing to do!
 
-    	const { uid, canonicalUri } = keys;
+    	const { uid /*, canonicalUri*/ } = keys;
 
     	const account = accounts.get( ''+uid );
     	if( !account )
@@ -40,12 +40,12 @@ export class InMemoryStorage implements Storage {
         return accounts.get( ''+uid );
     }
 
-    async saveClientSession( sessionKey: string, profileUri: string, agentUrl?: string ) {
+    async saveClientSession( sessionKey: string, canonicalUri: CanonicalURI, agentUrl?: string ) {
         const id = nextSessionId++;
     	clientSessions.set( id, {
     		id,
     		created: new Date(),
-    		profileUri,
+    		canonicalUri,
     		agentUrl,
     		sessionKey
     	});
@@ -58,8 +58,12 @@ export class InMemoryStorage implements Storage {
 
     async saveChallenge( challenge: string ) {
     	const id = nextChallengeId++;
-    	challenges.set( id, challenge );
+    	challenges.set( id, { id, challenge, created: new Date() } );
     	return id;
+    }
+
+    async fetchChallenge( id: number ) {
+        return challenges.get( id );
     }
 
     async deleteChallenge( id: number ) {

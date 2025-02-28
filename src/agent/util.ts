@@ -1,10 +1,10 @@
 import axios from "axios";
-import { AgenticProfile } from "@agentic-profile/auth";
-
 import {
+    AgenticProfile,
     CanonicalURI,
     ProfileURI
-} from "./models.js";
+} from "@agentic-profile/auth";
+
 import { ServerError } from "../util/net.js";
 import { createTimer } from "../util/index.js";
 

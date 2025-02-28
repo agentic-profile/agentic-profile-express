@@ -1,4 +1,3 @@
-import auth from "basic-auth";
 import express, {
     Response,
     Request
@@ -17,7 +16,7 @@ import {
     baseUrl,
 } from "./util/net.js"
 
-import { ChatMessageEnvelope } from "./agent/chat/models.js"
+import { ChatMessageEnvelope } from "./chat/models.js"
 import { UserId } from "./storage/models.js"
 
 export interface Status {
@@ -60,7 +59,6 @@ export function openRoutes( options: OpenRouteOptions ) {
     }));
 
     router.post( "/agent-login", asyncHandler( async (req: Request, res: Response) => {
-        const { uid } = req.params;
         const result = await agentLogin( req.body as SignedChallenge );
         res.json( result );
     }));

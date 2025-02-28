@@ -11,11 +11,11 @@ This simple demo is intended to be extended for more complex use cases.
 
 The easiest way to run this demo is locally.
 
-1. Clone this repository: 
+1. From the shell, clone this repository
 
 	$ git clone git@github.com:agentic-profile/agentic-profile-express.git
 
-2. From the shell, switch to this project directory
+2. Then switch to the project directory
 
 	$ cd agentic-profile-express
 
@@ -26,3 +26,35 @@ The easiest way to run this demo is locally.
 4. Run the server
 
 	$ yarn dev
+
+
+## Testing
+
+1. Create a demo agentic profile with public and private keys.
+
+	$ node test/create-demo-agentic-profile
+
+2. Make sure the local server is started at http://localhost:3003
+
+	$ yarn dev
+
+3. Use CURL to request a chat reply:
+
+	$ curl -X PUT http://localhost:3003/v1/agents/1/agentic-chat
+
+4. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
+
+	{
+		"type":"agentic-challenge/1.0",
+		"challenge":"1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY",
+		"login":"/v1/agent-login"
+	}
+
+5. Sign the challenge and login.  (Make sure to replace the string after "yarn login" with the challenge from step 4)
+
+	$ node test/agent-login "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
+
+6. Use the agent token (session key) to authenticate and generate a chat reply
+
+	$ yarn test/chat-reply "eyJpZCI6MSwic2Vzc2lvbktleSI6IkFJMmtKQ1BqRnBtNEc1W"
+
