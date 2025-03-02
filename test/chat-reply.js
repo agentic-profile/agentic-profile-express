@@ -13,10 +13,11 @@ import { logAxiosResult } from "./util.js";
     console.log( "Using agent token: ", agentToken );
 
     const envelope = {
-    	from: 'https://iamagentic.ai/mike',
+    	to: 'https://localhost:3003/iam/2',
     	message: {
-    		to: 'http://localhost:3003/iam/1',
-    		content: "Hello!"
+    		from: 'http://localhost:3003/iam/7',
+    		content: "Hello!",
+            created: new Date()
     	}
     };
 
@@ -28,7 +29,7 @@ import { logAxiosResult } from "./util.js";
 
     try {
         const result = await axios.put(
-        	"http://localhost:3003/v1/agents/1/agentic-chat",
+        	"http://localhost:3003/v1/agents/2/agentic-chat",
         	envelope,
         	auth
         );

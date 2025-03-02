@@ -15,7 +15,10 @@ import {
 import {
     ChatMessageEnvelope,
     HandleAgentChatMessageParams
-} from "./chat/models.js"
+} from "./chat/models.js";
+import { createAccount } from "./accounts/management.js";
+import { NewAccountFields } from "./storage/models.js";
+import { storage } from "./storage/handle.js";
 
 export interface Status {
     name?: string,
@@ -40,6 +43,19 @@ export function openRoutes( options: OpenRouteOptions ) {
     router.get( "/status", function( req: Request, res: Response ) {
         res.json({ name:"Agentic Profile Node Service", version:[1,0,0], ...status, started:runningSince, url:baseUrl(req) }); 
     });
+
+    router.get( "/storage", asyncHandler( async (req: Request, res: Response) => {
+        const data = await storage().dump();
+        res.status(200)
+            .set('Content-Type', 'application/json')
+            .send( JSON.stringify(data, null, 4) ); // make easier to read ;)
+    }));
+
+    // TODO lock this down - only for testing!
+    router.post( "/accounts", asyncHandler( async (req: Request, res: Response) => {
+        const account = await createAccount( req.body as NewAccountFields );
+        res.json({ account });
+    }));
 
     // For a third-party agent to post a message to the agent of the given uid
     // If no authorization is provided, or it is expired, then a challenge is issued

@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "tsup",
+    "prepare": "tsup --external ./src/storage/handle",
     "dev": "node --inspect index.local.js",
-    "build": "tsup",
+    "build": "tsup --external ./src/storage/handle",
     "test": "jest"
   },
   "exports": {

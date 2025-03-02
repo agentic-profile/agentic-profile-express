@@ -1,4 +1,8 @@
 import {
+    CanonicalURI
+} from "@agentic-profile/auth";
+
+import {
     AgentChatKey,
     ChatMessage,
     ChatMessageEnvelope,
@@ -7,10 +11,10 @@ import {
 import {
     ChatCompletionResult
 } from "../ai-providers/models.js";
-import { ensureBalance } from "../agent/billing.js";
-import { createCanonicalProfileUri } from "../agent/util.js";
+import { ensureBalance } from "../accounts/billing.js";
+import { createCanonicalProfileUri } from "../accounts/util.js";
 import { User } from "../storage/models.js";
-import { storage } from "../storage/handle.js"
+import { storage } from "../storage/handle.js";
 import { ServerError } from "../util/net.js";
 import { chatCompletion } from "./completion.js";
 
@@ -20,18 +24,27 @@ export async function handleAgentChatMessage({ uid, pathname, envelope, agentSes
     const { message, rewind } = envelope;
     const chatKey = { uid, pathname, canonicalUri, clientAgentUrl } as AgentChatKey;
 
-    console.log( "handleAgentChatMessage", chatKey );
+    console.log( "handleAgentChatMessage", chatKey, message );
+
+    // validate the message
+    if( !message )
+        throw new ServerError( [4], "Missing chat message" );
+    if( message.from !== canonicalUri )
+        throw new ServerError( [4], "Chat message 'from' does not match session canonicalUri: " + message.from + ' != ' + canonicalUri );
+    if( !message.created )
+        throw new ServerError( [4], "Chat message missing 'created' property" );
+    if( !message.content )
+        throw new ServerError( [4], "Chat message missing content" );
 
     // save incoming message locally
     if( rewind )
         await rewindChat( chatKey, envelope );
-    else if( message ) {
-        message.from = canonicalUri;  // ensure 'from' is correct
+    else {
+        //message.from = canonicalUri;  // ensure 'from' is correct
         //const messageJSON = JSON.stringify(message);
         //await queryResult( INSERT_MESSAGE, [messageJSON,uid,canonicalUri] );
-        await storage().insertChatMessage( chatKey, message );
-    } else
-        return { reply: null };  // nothing to do
+        await storage().insertChatMessage( chatKey, message, true );
+    }
 
     // fetch all messages for AI
     let chat = await storage().fetchAgentChat( chatKey );
@@ -98,7 +111,7 @@ export async function generateChatReply( uid: string | number, messages: ChatMes
     // if there are no messages from me, then introduce myself
     if( messages.some(e=>e.from === canonicalUri) !== true ) {
         console.log( 'intro', canonicalUri, messages );
-        return introduceMyself( user ); //, personas, canonicalUri );
+        return introduceMyself( user, canonicalUri );
     }
 
     // Craft an instruction for AI with my role and goals
@@ -110,7 +123,11 @@ export async function generateChatReply( uid: string | number, messages: ChatMes
     return await chatCompletion({ canonicalUri, messages });
 }
 
-function introduceMyself( user: User ): ChatCompletionResult {
-    const reply = { content: "Nice to meet you!" } as ChatMessage;
+function introduceMyself( user: User, canonicalUri: CanonicalURI ): ChatCompletionResult {
+    const reply = {
+        from: canonicalUri,
+        content: `My name is ${user.name}. Nice to meet you!`,
+        created: new Date()
+    } as ChatMessage;
     return { reply, cost: 0.01 };
 }

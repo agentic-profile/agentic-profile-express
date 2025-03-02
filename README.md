@@ -30,13 +30,13 @@ The easiest way to run this demo is locally.
 
 ## Testing a General Agentic Profile With No Client Agent
 
-1. Create a demo agentic profile with public and private keys.
-
-	$ node test/create-general-agentic-profile
-
-2. Make sure the local server is started at http://localhost:3003
+1. Make sure the local server is started at http://localhost:3003
 
 	$ yarn dev
+
+2. Create a demo agentic profile with public and private keys, and an account on the server
+
+	$ node test/create-general-agentic-profile
 
 3. Use CURL to request a chat reply:
 
