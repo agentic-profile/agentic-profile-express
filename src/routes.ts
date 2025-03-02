@@ -2,10 +2,7 @@ import express, {
     Response,
     Request
 } from "express";
-import {
-    ClientAgentSession,
-    SignedChallenge
-} from "@agentic-profile/auth";
+import { SignedChallenge } from "@agentic-profile/auth";
 
 import {
     agentLogin,
@@ -15,9 +12,10 @@ import {
     asyncHandler,
     baseUrl,
 } from "./util/net.js"
-
-import { ChatMessageEnvelope } from "./chat/models.js"
-import { UserId } from "./storage/models.js"
+import {
+    ChatMessageEnvelope,
+    HandleAgentChatMessageParams
+} from "./chat/models.js"
 
 export interface Status {
     name?: string,
@@ -26,7 +24,7 @@ export interface Status {
 
 export interface OpenRouteOptions {
     status?: Status,
-    handleAgentChatMessage: ( uid: UserId, envelope: ChatMessageEnvelope, agentSession: ClientAgentSession ) => void
+    handleAgentChatMessage: ( params: HandleAgentChatMessageParams ) => void
 }
 
 export function openRoutes( options: OpenRouteOptions ) {
@@ -54,7 +52,12 @@ export function openRoutes( options: OpenRouteOptions ) {
             // A 401 has been issued with a challenge...
             return;
 
-        const result = await handleAgentChatMessage( uid, req.body as ChatMessageEnvelope, agentSession );
+        const result = await handleAgentChatMessage({
+            uid,
+            pathname: req.path,
+            envelope: req.body as ChatMessageEnvelope, 
+            agentSession
+        });
         res.json( result );
     }));
 

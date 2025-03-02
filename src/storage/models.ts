@@ -1,10 +1,19 @@
-import { AgentAuthStore } from "@agentic-profile/auth";
-import { AgentChatKeys } from "../chat/models.js";
+import {
+    AgentAuthStore
+} from "@agentic-profile/auth";
+import {
+    AgentChat,
+    AgentChatKey,
+    ChatMessage,
+    ChatMessageHistory
+} from "../chat/models.js";
 
 export type UserId = string | number;
 
 export interface User {
-    uid: number
+    uid: number,
+    name: string,
+    alias?: string
 }
 
 export interface Account extends User {
@@ -12,7 +21,12 @@ export interface Account extends User {
 }
 
 export interface Storage extends AgentAuthStore {
-    recordChatCost: ( keys: AgentChatKeys, cost: number | undefined ) => void,
-    fetchAccountFields: ( uid: UserId, fields?: string ) => Promise<Account | undefined>
-}
+    fetchAccountFields: ( uid: UserId, fields?: string ) => Promise<Account | undefined>,
 
+    // Chat
+    ensureAgentChat: ( key: AgentChatKey, messages?: ChatMessage[] ) => Promise<AgentChat>
+    recordChatCost: ( key: AgentChatKey, cost: number | undefined ) => void,
+    insertChatMessage: ( key: AgentChatKey, message: ChatMessage ) => void,
+    updateChatHistory: ( key: AgentChatKey, history: ChatMessageHistory ) => void,
+    fetchAgentChat: ( key: AgentChatKey ) => Promise<AgentChat | undefined>
+}

@@ -28,7 +28,40 @@ The easiest way to run this demo is locally.
 	$ yarn dev
 
 
-## Testing
+## Testing a General Agentic Profile With No Client Agent
+
+1. Create a demo agentic profile with public and private keys.
+
+	$ node test/create-general-agentic-profile
+
+2. Make sure the local server is started at http://localhost:3003
+
+	$ yarn dev
+
+3. Use CURL to request a chat reply:
+
+	$ curl -X PUT http://localhost:3003/v1/agents/1/agentic-chat
+
+4. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
+
+	{
+		"type":"agentic-challenge/1.0",
+		"challenge":"1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY",
+		"login":"/v1/agent-login"
+	}
+
+	NOTE: Copy the "challenge" from your server's response for the next step...
+
+5. Sign the challenge and login.  (Make sure to replace the string after "node test/agent-login" with the challenge you got from step 4)
+
+	$ node test/general-login "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
+
+6. Use the agent token (session key) to authenticate and generate a chat reply
+
+	$ node test/chat-reply "eyJpZCI6MSwic2Vzc2lvbktleSI6IkFJMmtKQ1BqRnBtNEc1W"
+
+
+## Testing an Agentic Profile With Listed Agents With Their Own Public Keys
 
 1. Create a demo agentic profile with public and private keys.
 
@@ -52,7 +85,7 @@ The easiest way to run this demo is locally.
 
 	NOTE: Copy the "challenge" from your server's response for the next step...
 
-5. Sign the challenge and login.  (Make sure to replace the string after "yarn login" with the challenge you got from step 4)
+5. Sign the challenge and login.  (Make sure to replace the string after "node test/agent-login" with the challenge you got from step 4)
 
 	$ node test/agent-login "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
 

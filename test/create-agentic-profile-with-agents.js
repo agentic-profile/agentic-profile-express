@@ -24,14 +24,14 @@ const __dirname = dirname(__filename);
         agents: [
             {
                 type: "chat",
-                url: "http://agent.smarterdating.ai/agents/1/chat",
+                url: "http://agent.smarterdating.ai/agents/7/chat",
                 name: "chat_agent"
             }
         ]
     };
 
     try {
-        const filePath = join(__dirname, "..", "www", "iam", "1");
+        const filePath = join(__dirname, "..", "www", "iam", "7");
         await mkdir(filePath, { recursive: true });
 
         await writeFile(

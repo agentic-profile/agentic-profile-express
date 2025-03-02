@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "tsup",
-    "dev": "node index.local.js",
+    "dev": "node --inspect index.local.js",
     "build": "tsup",
     "test": "jest"
   },
@@ -44,6 +44,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "morgan": "^1.10.0",
+    "mysql2": "^3.12.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.3.6",
     "typescript": "^5.7.2"

@@ -20,7 +20,9 @@ export async function resolveAgentSession( req: Request, res: Response ): Promis
     const { authorization } = req.headers;
     if( !authorization ) {
         const challenge = await createChallenge( storage() );
-        res.status(401).send( challenge );
+        res.status(401)
+            .set('Content-Type', 'application/json')
+            .send( JSON.stringify(challenge, null, 4) );
         return null;
     } else
         return await handleAuthorization( authorization, storage() );

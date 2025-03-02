@@ -7,11 +7,12 @@ import {
     InMemoryStorage,
     openRoutes,
     setStorage
-} from './dist/index.js';   // simulate fetching from node package
+} from './dist/index.js';
 
 import {
     handleAgentChatMessage
-} from "./dist/chat/index.js";
+//} from "./dist/chat/simple.js";
+} from "./dist/chat/full.js";
 
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
