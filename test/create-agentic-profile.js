@@ -67,7 +67,7 @@ Shhhh! Keyring for testing... ${keyringJSON}`);
         // create account # 2, which will be the person represented by agent/2
         const newAccountFields = {
             uid: 2,
-            name: "Eric Portman",
+            name: "Eric Portman", // #2 in the Prisoner ;)
             credit: 10
         };
 

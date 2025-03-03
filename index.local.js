@@ -5,6 +5,7 @@ import express from "express";
 import {
     app,
     InMemoryStorage,
+    MySQLStorage,
     openRoutes,
     setStorage
 } from './dist/index.js';
@@ -25,7 +26,8 @@ app.use("/", express.static(
     { index: 'index.json' }
 ));
 
-setStorage( new InMemoryStorage() );
+const storage = process.env.AP_STORAGE === 'mysql' ? MySQLStorage : InMemoryStorage;
+setStorage( new storage() );
 
 app.use("/v1", openRoutes({
     status: { name: "Testing" },
@@ -34,5 +36,5 @@ app.use("/v1", openRoutes({
 
 const port = process.env.PORT || 3003;
 app.listen(port, () => {
-    console.info(`Agentic Profile Node Service listening on http://localhost:${port}`);
+    console.info(`Agentic Profile Express listening on http://localhost:${port}`);
 });

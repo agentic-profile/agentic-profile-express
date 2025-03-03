@@ -1,12 +1,12 @@
 {
   "name": "@agentic-profile/express",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Framework for a Node Express based service for AI Agents using the Agentic Profile protocols",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "tsup --external ./src/storage/handle",
-    "dev": "node --inspect index.local.js",
+    "dev": "yarn build; node --inspect index.local.js",
     "build": "tsup --external ./src/storage/handle",
     "test": "jest"
   },

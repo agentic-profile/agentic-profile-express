@@ -2,6 +2,7 @@ import mysql from 'mysql2/promise'
 
 const {
 	MYSQL_HOSTNAME: host,
+    MYSQL_DATABASE: database,
 	MYSQL_PASSWORD: password,
 	MYSQL_USER: user
 } = process.env;
@@ -11,12 +12,14 @@ if( !password )
     console.error( "ERROR: process.env missing MYSQL_PASSWORD" );
 if( !user )
     console.error( "ERROR: process.env missing MYSQL_USER" );
+if( !database )
+    console.error( "ERROR: process.env missing MYSQL_DATABASE" );
 
 var options = {
     connectionLimit : 10,   // TODO is there a better number?
     host,
     user,
-    database : 'agentic', 
+    database, 
     port     : resolvePort(),
     timezone : '+00:00',
     charset  : 'utf8mb4',

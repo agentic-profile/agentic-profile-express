@@ -41,6 +41,7 @@ export class InMemoryStorage implements Storage {
 
     async dump() {
         return {
+            database: 'memory',
             accounts: mapToObject( accounts ),
             challenges: mapToObject( challenges ),
             clientSessions: mapToObject( clientSessions ),
@@ -110,7 +111,7 @@ export class InMemoryStorage implements Storage {
             uid = nextUserId++;
 
         const { name, alias, credit = 2 } = fields;
-        const account = { name, alias, credit, uid };
+        const account = { name, alias, credit, uid, created: new Date() };
         accounts.set( ''+uid, account );
         console.log( 'createAccount', account, accounts );
         return account;

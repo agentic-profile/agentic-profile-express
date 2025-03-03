@@ -1,4 +1,4 @@
-console.log( "Agent login..." );
+console.log( "General login..." );
 
 import axios from "axios";
 import {
@@ -47,7 +47,7 @@ const __dirname = dirname(__filename);
         logAxiosResult( axiosResult );
 
         const { agentToken } = axiosResult.data;
-        console.log( "Agent token:", agentToken );
+        console.log( "\n\nAgent token:", agentToken );
     } catch (error) {
         console.error("Failed to login");
         logAxiosResult( error );

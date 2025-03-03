@@ -16,7 +16,7 @@ CREATE TABLE users(
     updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     source TINYTEXT NOT NULL, # Track who created user accounts
     password_hash JSON, # { hash: base64_string, salt: salt.toString('base64'), options }
-    session_key VARCHAR(40),
+    session_key TINYTEXT,
     roles JSON, # ARRAY as 'admin','mod','qa','dev' 
     name VARCHAR(80),
     alias VARCHAR(40),
@@ -38,7 +38,7 @@ CREATE TABLE agent_chats(
     # agent chat key
     uid INT NOT NULL,                 # user that agent is representing
     pathname VARCHAR(80) NOT NULL,
-    canonical_uri TINYTEXT NOT NULL,  # Canonical uri of other person/actor/agent (may be on different/remote system)
+    canonical_uri VARCHAR(255) NOT NULL,  # Canonical uri of other person/actor/agent (may be on different/remote system)
     client_agent_url VARCHAR(255),
     UNIQUE INDEX agent_key (uid,pathname,canonical_uri,client_agent_url),
 
@@ -59,7 +59,7 @@ CREATE TABLE agent_chats(
 CREATE TABLE client_agent_challenges(
     id INT PRIMARY KEY AUTO_INCREMENT,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    challenge VARCHAR(40) NOT NULL
+    challenge TINYTEXT NOT NULL
 );
 
 # sessions created by agent server side, and session key given to client agent

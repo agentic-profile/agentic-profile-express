@@ -13,11 +13,12 @@ export type UserId = string | number;
 export interface User {
     uid: number,
     name: string,
-    alias?: string
+    alias?: string,
+    created: Date
 }
 
 export interface NewAccountFields {
-    uid?: UserId,   // request this user id
+    uid?: number,   // request this user id
     name: string,
     alias?: string,
     credit?: number

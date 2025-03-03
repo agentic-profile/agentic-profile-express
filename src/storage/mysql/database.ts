@@ -1,5 +1,6 @@
 import {
     CanonicalURI,
+    ChallengeRecord,
     ClientAgentSession
 } from "@agentic-profile/auth";
 
@@ -12,15 +13,20 @@ import {
 
 import {
     Account,
+    NewAccountFields,
+    Storage,
     UserId
 } from "../models.js";
 import {
     queryFirstRow,
     queryResult,
+    queryRows,
     updateDB
 } from "./util.js";
+import { ServerError } from "../../util/net.js";
 
-const AGENT_CHAT_COLUMNS = "cid,uid,pathname,canonical_uri as canonicalUri,client_agent_url as clientAgentUrl,created,updated,aimodel,cost,history";
+
+const AGENT_CHAT_COLUMNS = "uid,pathname,canonical_uri as canonicalUri,client_agent_url as clientAgentUrl,created,updated,aimodel,cost,history";
 
 const MATCHES_AGENT_CHAT = "uid=? AND pathname=? AND canonical_uri=? AND client_agent_url=?";
 
@@ -34,11 +40,33 @@ const INSERT_MESSAGE = `UPDATE agent_chats
     )
     WHERE ${MATCHES_AGENT_CHAT}`;
 
-function matchesChatParams( key: AgentChatKey ) {
-    return [ key.uid, key.pathname, key.canonicalUri, key.clientAgentUrl ];
+function matchesChatParams( { uid, pathname, canonicalUri, clientAgentUrl }: AgentChatKey ) {
+    return [ uid, pathname, canonicalUri, clientAgentUrl ];
 }
 
-export class MySQLStorage extends Storage {
+export class MySQLStorage implements Storage {
+
+    //
+    // Accounts
+    //
+
+    async createAccount( fields: NewAccountFields ) {
+        const { uid, name, alias, credit = 2 } = fields;
+        const account = { name, alias, credit, created: new Date() } as Account;
+
+        if( uid ) {
+            const found = await queryFirstRow<Account>("SELECT name FROM users WHERE uid=?",[uid]);
+            if( found )
+                throw new ServerError([4],"Account id is already in use: " + uid);
+            account.uid = uid;
+        } 
+
+        const { insertId } = await queryResult( "INSERT INTO users SET ?", [account] );
+        account.uid = insertId;
+
+        console.log( 'createAccount', account );
+        return account;  
+    }
 
     //
     // Chat
@@ -107,7 +135,7 @@ export class MySQLStorage extends Storage {
         return await queryFirstRow<AgentChat>(
             `SELECT ${AGENT_CHAT_COLUMNS} FROM agent_chats WHERE ${MATCHES_AGENT_CHAT}`,
             matchesChatParams(key)
-        );  
+        ) ?? undefined;  
     }
 
 
@@ -117,15 +145,17 @@ export class MySQLStorage extends Storage {
 
     async fetchAccountFields( uid: UserId, fields?: string ) {
         const sql = `SELECT ${fields ?? "*"} FROM users WHERE uid=?`;
-        return await queryFirstRow<Account>( sql, [uid] );
+        return await queryFirstRow<Account>( sql, [uid] ) ?? undefined;
     }
 
 
     //
-    // Sessions and challenges
+    // Sessions, where we have authenticated either a general agentic profile (no agent_url)
+    // or a specific agent of an agentic profile and we are sure the agent signed the
+    // server challenge and attestation
     //
 
-    async saveClientSession( sessionKey: string, canonicalUri: CanonicalURI, agentUrl: string ): Promise<number> {
+    async saveClientSession( sessionKey: string, canonicalUri: CanonicalURI, agentUrl?: string ): Promise<number> {
         const params = [{
             session_key: sessionKey,
             canonical_uri: canonicalUri,
@@ -143,16 +173,46 @@ export class MySQLStorage extends Storage {
             sessionKey: session.session_key,
             canonicalUri: session.canonical_uri,
             agentUrl: session.agent_url
-        } as ClientAgentSession : null;
+        } as ClientAgentSession : undefined;
     }
+
+    //
+    // Challenges, where server agent challenges client agent
+    //
 
     async saveChallenge( challenge: string ) {
         const { insertId: id } = await queryResult( 'INSERT INTO client_agent_challenges SET ?', [{challenge}] );
         return id;
     }
 
+    async fetchChallenge( id: number ) {
+        return await queryFirstRow<ChallengeRecord>(
+            "SELECT id,challenge,created FROM client_agent_challenges WHERE id=?",
+            [id]
+        ) ?? undefined;
+    }
+
     async deleteChallenge( id: number ) {
         await queryResult( 'DELETE FROM client_agent_challenges WHERE id=?', [id] );
+    }
+
+    //
+    // Debug
+    //
+
+    async dump() {
+        const accounts = await queryRows<Account>( "SELECT uid,created,updated,name,alias,credit FROM users" );
+        const challenges = await queryRows<ChallengeRecord>( "SELECT * FROM client_agent_challenges" );
+        const clientSessions = await queryRows<any>( "SELECT * FROM client_agent_sessions" );
+        const agentChats = await queryRows<AgentChat>( "SELECT uid,created,updated,pathname,canonical_uri,client_agent_url,cost,aimodel,history FROM agent_chats" );
+
+        return {
+            database: "MySQL",
+            accounts,
+            challenges,
+            clientSessions,
+            agentChats
+        }
     }
 }
 
