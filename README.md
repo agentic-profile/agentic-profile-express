@@ -129,9 +129,62 @@ The easiest way to run this demo is locally.
 
 6. The agent login script will return with something similar to:
 
+    Agent login...
+    Using challenge:  2:MGgSEKHqpgkk4vemmGPEGGkk7Q1Y1hnr97vEmQ5Vwow
+    Using agent and keypair:  {
+        "agent": {
+            "type": "chat",
+            "url": "https://agents.matchwise.ai/agents/7/agentic-chat",
+            "name": "chatbot",
+            "keyring": [
+                {
+                    "name": "chat1",
+                    "type": "ed25519",
+                    "publicKey": "RGaLQIGvRXvmUTfvbo0dd1UhdtKtnIXGmSCCESzb0D0",
+                    "created": "2025-03-03T17:24:38.241Z",
+                    "expires": "2030-01-01T08:00:00.000Z"
+                }
+            ]
+        },
+        "keyring": [
+            {
+                "type": "ed25519",
+                "privateKey": "LMXVpQ4GEwBTiCUprSFETw8ewYCUNnxmB8SN42BHEKQ",
+                "publicKey": "9xi+PJz1HMvJJz3TkTj4w2TBSuKi9YgpevjD1w9Exe4"
+            },
+            {
+                "type": "ed25519",
+                "privateKey": "rxPgWpNGJMkD6kDic9+oiW0Q6MX8QEPCN+pxR38nN9o",
+                "publicKey": "RGaLQIGvRXvmUTfvbo0dd1UhdtKtnIXGmSCCESzb0D0"
+            }
+        ],
+        "keypair": {
+            "type": "ed25519",
+            "privateKey": "rxPgWpNGJMkD6kDic9+oiW0Q6MX8QEPCN+pxR38nN9o",
+            "publicKey": "RGaLQIGvRXvmUTfvbo0dd1UhdtKtnIXGmSCCESzb0D0"
+        }
+    }
+    HTTP summary: {
+        "request": {
+            "method": "post",
+            "url": "http://localhost:3003/v1/agent-login",
+            ...
+        },
+        "response": {
+            "status": 200,
+            "data": {
+                "agentToken": "eyJpZCI6Miwic2Vzc2lvbktleSI6Ikk1TG5NNnYybE1ackRLUFlDNUlRbVZxOCtrV3RkRmtaaytYU1lzZDFpelUifQ"
+            }
+        }
+    }
 
+    Agent token: eyJpZCI6Miwic2Vzc2lvbktleSI6Ikk1TG5NNnYybE1ackRLUFlDNUlRbVZxOCtrV3RkRmtaaytYU1lzZDFpelUifQ
 
-6. Use the agent token (session key) to authenticate and generate a chat reply
+7. Use the agent token (session key) to authenticate and generate a chat reply
 
-    $ node test/chat-reply "eyJpZCI6MSwic2Vzc2lvbktleSI6IkFJMmtKQ1BqRnBtNEc1W"
+    $ node test/chat-reply %lt;agent token from step 6&gt;
+
+    For example:
+
+    $ node test/chat-reply "eyJpZCI6Miwic2Vzc2lvbktleSI6Ikk1TG5NNnYybE1ackRLUFlDNUlRbVZxOCtrV3RkRmtaaytYU1lzZDFpelUifQ"
 
