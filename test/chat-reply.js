@@ -36,7 +36,7 @@ import { logAxiosResult } from "./util.js";
 
         logAxiosResult( result );
     } catch (error) {
-        console.error("Failed to chat with reply");
         logAxiosResult( error );
+        console.error("ERROIR: Failed to chat with reply");
     }
 })();

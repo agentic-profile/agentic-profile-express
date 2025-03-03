@@ -13,18 +13,34 @@ import { logAxiosResult } from "./util.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-(async ()=>{
+async function generateKeys( name ) {
     const keypair = await createKeypair();
-    const publicKeypair = {
+    const shared = {
+        name,
         ...keypair,
         privateKey: undefined,
         created: new Date(),
         expires: new Date('2030-1-1')
     };
+    return { keypair, shared };
+}
+
+(async ()=>{
+
+    const { keypair: generalKeypair, shared: generalPublicKey } = await generateKeys();
+    const { keypair: agentKeypair, shared: agentPublicKey } = await generateKeys( 'chat1' );
 
     const profile = {
         name: "General",
-        keyring: [ publicKeypair ],
+        keyring: [ generalPublicKey ],
+        agents: [
+            {
+                type: "chat",
+                url: "https://agents.matchwise.ai/agents/7/agentic-chat",
+                name: "chatbot",
+                keyring: [ agentPublicKey ]
+            }
+        ]
     };
 
     try {
@@ -37,7 +53,7 @@ const __dirname = dirname(__filename);
             "utf8"
         );
 
-        const keyringJSON = JSON.stringify([ keypair ], null, 4);
+        const keyringJSON = JSON.stringify([ generalKeypair, agentKeypair ], null, 4);
         await writeFile(
             join(filePath, "keyring.json"),
             keyringJSON,
@@ -54,10 +70,16 @@ Shhhh! Keyring for testing... ${keyringJSON}`);
             name: "Eric Portman",
             credit: 10
         };
-        const axiosResult = await axios.post( "http://localhost:3003/v1/accounts", newAccountFields );
-        logAxiosResult( axiosResult );
+
+        try {
+            const axiosResult = await axios.post( "http://localhost:3003/v1/accounts", newAccountFields );
+            logAxiosResult( axiosResult );
+        } catch( error ) {
+            logAxiosResult( error );    
+            console.error( "ERROR: Failed to create account" );
+        }
 
     } catch (error) {
-        console.error("Failed to create profile:", error);
+        console.error("ERROR: Failed to create profile:", error);
     }
 })();

@@ -34,13 +34,13 @@ The easiest way to run this demo is locally.
 
 	$ yarn dev
 
-2. Create a demo agentic profile with public and private keys, and an account on the server
+2. Create a demo agentic profile with public and private keys, and an account (uid=2) on the server
 
-	$ node test/create-general-agentic-profile
+	$ node test/create-agentic-profile
 
 3. Use CURL to request a chat reply:
 
-	$ curl -X PUT http://localhost:3003/v1/agents/1/agentic-chat
+	$ curl -X PUT http://localhost:3003/v1/agents/2/agentic-chat
 
 4. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
 
@@ -63,13 +63,13 @@ The easiest way to run this demo is locally.
 
 ## Testing an Agentic Profile With Listed Agents With Their Own Public Keys
 
-1. Create a demo agentic profile with public and private keys.
-
-	$ node test/create-demo-agentic-profile
-
-2. Make sure the local server is started at http://localhost:3003
+1. Make sure the local server is started at http://localhost:3003
 
 	$ yarn dev
+
+2. Create a demo agentic profile with public and private keys.
+
+	$ node test/create-agentic-profile
 
 3. Use CURL to request a chat reply:
 
