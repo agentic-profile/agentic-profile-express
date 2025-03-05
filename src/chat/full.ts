@@ -12,11 +12,12 @@ import {
     ChatCompletionResult
 } from "../ai-providers/models.js";
 import { ensureBalance } from "../accounts/billing.js";
-import { createCanonicalProfileUri } from "../accounts/util.js";
+//import { createCanonicalProfileUri } from "../accounts/util.js";
 import { User } from "../storage/models.js";
 import { storage } from "../storage/handle.js";
 import { ServerError } from "../util/net.js";
 import { chatCompletion } from "./completion.js";
+import { agentHooks } from "../hooks.js";
 
 
 export async function handleAgentChatMessage({ uid, pathname, envelope, agentSession }: HandleAgentChatMessageParams) {
@@ -55,7 +56,7 @@ export async function handleAgentChatMessage({ uid, pathname, envelope, agentSes
     const history = chat.history;
 
     // generate reply and track cost
-    const { reply, cost } = await generateChatReply( uid, history?.messages ?? []);
+    const { reply, cost } = await agentHooks().generateChatReply( uid, history?.messages ?? []);
     await storage().recordChatCost( chatKey, cost );
 
     // save reply locally
@@ -99,7 +100,7 @@ export async function rewindChat( chatKey: AgentChatKey, envelope: ChatMessageEn
 }
 
 export async function generateChatReply( uid: string | number, messages: ChatMessage[] ): Promise<ChatCompletionResult> {
-    const canonicalUri = createCanonicalProfileUri( uid );
+    const canonicalUri = agentHooks().createCanonicalProfileUri( uid );
     //const personas = (await fetchPersonas( uid ))?.personas?.filter(e=>!e.hidden);  // except hidden
 
     //const user = await queryFirstRow<User>("SELECT uid,name FROM users WHERE uid=?",[uid]);

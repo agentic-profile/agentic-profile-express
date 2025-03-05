@@ -1,6 +1,6 @@
 {
   "name": "@agentic-profile/express",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Framework for a Node Express based service for AI Agents using the Agentic Profile protocols",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/agentic-profile/agentic-profile-express#readme",
   "dependencies": {
-    "@agentic-profile/auth": "^0.1.7",
+    "@agentic-profile/auth": "^0.1.8",
     "@google-cloud/vertexai": "^1.9.3",
     "@types/basic-auth": "^1.1.8",
     "@types/cors": "^2.8.17",
