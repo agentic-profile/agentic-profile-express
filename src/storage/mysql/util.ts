@@ -1,17 +1,19 @@
 import {
 	OkPacket,
 	//RowDataPacket
-} from "mysql2"
-import mysql from "./mysql-pool.js"
-import { ServerError } from "../../util/net.js"
+} from "mysql2";
+import pool from "./mysql-pool.js";
+import { ServerError } from "../../util/net.js";
+
+export { pool }
 
 export async function queryResult( sql: string, params?: any[] ) {
-    const [ result ] = await mysql.query( sql, params );
+    const [ result ] = await pool.query( sql, params );
     return result as OkPacket;
 }
 
 export async function queryRows<T>( sql: string, params?: any[] ) {
-    const [ result ] = await mysql.query( sql, params );
+    const [ result ] = await pool.query( sql, params );
     return result as T[];
 }
 

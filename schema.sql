@@ -40,7 +40,9 @@ CREATE TABLE agent_chats(
     pathname VARCHAR(80) NOT NULL,
     canonical_uri VARCHAR(255) NOT NULL,  # Canonical uri of other person/actor/agent (may be on different/remote system)
     client_agent_url VARCHAR(255),
-    UNIQUE INDEX agent_key (uid,pathname,canonical_uri,client_agent_url),
+
+    client_agent_url_index VARCHAR(255) GENERATED ALWAYS AS (COALESCE(client_agent_url, '')) STORED,
+    UNIQUE INDEX agent_key (uid, pathname, canonical_uri, client_agent_url_index),
 
     # state JSON, # current subject, etc.
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

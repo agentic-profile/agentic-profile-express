@@ -67,7 +67,7 @@ export async function handleAgentChatMessage({ uid, pathname, envelope, agentSes
 }
 
 // profile URI must be canonical!
-async function rewindChat( chatKey: AgentChatKey, envelope: ChatMessageEnvelope ) {
+export async function rewindChat( chatKey: AgentChatKey, envelope: ChatMessageEnvelope ) {
     const { message, rewind } = envelope; 
     /*const chat = await queryFirstRow<AgentChat>(
         "SELECT history FROM agent_chats WHERE uid=? AND profile_uri=?",

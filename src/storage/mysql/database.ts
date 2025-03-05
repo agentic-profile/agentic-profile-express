@@ -28,7 +28,8 @@ import { ServerError } from "../../util/net.js";
 
 const AGENT_CHAT_COLUMNS = "uid,pathname,canonical_uri as canonicalUri,client_agent_url as clientAgentUrl,created,updated,aimodel,cost,history";
 
-const MATCHES_AGENT_CHAT = "uid=? AND pathname=? AND canonical_uri=? AND client_agent_url=?";
+const MATCHES_AGENT_CHAT = `uid=? AND pathname=? AND canonical_uri=?
+ AND (client_agent_url = ? OR (? IS NULL AND client_agent_url IS NULL))`
 
 const INSERT_MESSAGE = `UPDATE agent_chats
     SET history = JSON_SET(
@@ -41,7 +42,7 @@ const INSERT_MESSAGE = `UPDATE agent_chats
     WHERE ${MATCHES_AGENT_CHAT}`;
 
 function matchesChatParams( { uid, pathname, canonicalUri, clientAgentUrl }: AgentChatKey ) {
-    return [ uid, pathname, canonicalUri, clientAgentUrl ];
+    return [ uid, pathname, canonicalUri, clientAgentUrl, clientAgentUrl ];
 }
 
 export class MySQLStorage implements Storage {
