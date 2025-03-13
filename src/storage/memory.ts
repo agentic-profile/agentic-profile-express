@@ -1,5 +1,5 @@
 import {
-    CanonicalURI,
+    DID,
     ChallengeRecord,
     ClientAgentSession
 } from "@agentic-profile/auth";
@@ -30,7 +30,7 @@ const clientSessions = new Map<number,ClientAgentSession>();
 const agentChats = new Map<string,AgentChat>();
 
 function resolveKey( key: AgentChatKey ) {
-    return `${key.uid};${key.pathname};${key.canonicalUri};${key.clientAgentUrl ?? ''}`;
+    return `${key.uid};${key.serverAgentDid};${key.clientAgentDid}`;
 }
 
 function mapToObject<K extends PropertyKey, V>(map: Map<K, V>): Record<K, V> {
@@ -142,13 +142,12 @@ export class InMemoryStorage implements Storage {
     // Sessions
     //
 
-    async saveClientSession( sessionKey: string, canonicalUri: CanonicalURI, agentUrl?: string ) {
+    async saveClientSession( sessionKey: string, did: DID ) {
         const id = nextSessionId++;
         clientSessions.set( id, {
             id,
             created: new Date(),
-            canonicalUri,
-            agentUrl,
+            did,
             sessionKey
         });
         return id;  

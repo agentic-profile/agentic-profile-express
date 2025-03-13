@@ -36,13 +36,11 @@ CREATE TABLE users(
 
 CREATE TABLE agent_chats(
     # agent chat key
-    uid INT NOT NULL,                 # user that agent is representing
-    pathname VARCHAR(80) NOT NULL,
-    canonical_uri VARCHAR(255) NOT NULL,  # Canonical uri of other person/actor/agent (may be on different/remote system)
-    client_agent_url VARCHAR(255),
+    uid INT NOT NULL,                        # user that agent is representing
+    server_agent_did VARCHAR(255) NOT NULL,  # uid's agent on this system
+    client_agent_did VARCHAR(255) NOT NULL,  # DID (partial of full with fragment) uri of other person/actor/agent (may be on different/remote system)
 
-    client_agent_url_index VARCHAR(255) GENERATED ALWAYS AS (COALESCE(client_agent_url, '')) STORED,
-    UNIQUE INDEX agent_key (uid, pathname, canonical_uri, client_agent_url_index),
+    UNIQUE INDEX agent_key (uid, server_agent_did, client_agent_did),
 
     # state JSON, # current subject, etc.
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -54,7 +52,7 @@ CREATE TABLE agent_chats(
     prompt_tokens INT DEFAULT 0,
     completion_tokens INT DEFAULT 0,
 
-    history JSON # format of JSON is { messages:[ { from: "https://iamagentic.ai/7", contents: "Hello", created: <ISO8601 string> }, ... ] }
+    history JSON # format of JSON is { messages:[ { from: "did:web:iamagentic.ai/7", contents: "Hello", created: <ISO8601 string> }, ... ] }
 );
 
 # challenge created on remote end, and returned to client agent
@@ -68,24 +66,22 @@ CREATE TABLE client_agent_challenges(
 CREATE TABLE client_agent_sessions(
     id INT PRIMARY KEY AUTO_INCREMENT,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    canonical_uri TINYTEXT NOT NULL, -- person this is from, canonical client profileUri
-    agent_url TINYTEXT, -- optional, client AgentUrl (when missing a generic request from profileUri)
+    did TINYTEXT NOT NULL, -- person this is from
     session_key TINYTEXT NOT NULL
 );
 
 CREATE TABLE agentic_profile_cache(
-    profile_uri VARCHAR(255) NOT NULL, -- Might NOT be canonical
+    profile_did VARCHAR(255) NOT NULL, -- Might NOT be canonical
     agentic_profile JSON NOT NULL, -- cached profile
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(profile_uri)
+    UNIQUE(profile_did)
 );
 
 # on client side, session token for communicating with remote/server agentUrl
 CREATE TABLE remote_agent_sessions(
     uid INT NOT NULL, -- implicit my profileUri
-    canonical_uri VARCHAR(255) NOT NULL, -- Their/remote canonical URI
-    remote_agent_url VARCHAR(255) NOT NULL, -- server agent we are communicating with
+    remote_agent_did VARCHAR(255) NOT NULL, -- server agent we are communicating with
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     agent_token TEXT NOT NULL,
-    UNIQUE(uid,canonical_uri,remote_agent_url)
+    UNIQUE(uid,remote_agent_did)
 );

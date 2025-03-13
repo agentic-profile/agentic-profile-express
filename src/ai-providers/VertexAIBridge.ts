@@ -1,10 +1,9 @@
 import {
-    //FunctionDeclarationSchemaType,
     HarmBlockThreshold,
     HarmCategory,
     VertexAI
 } from "@google-cloud/vertexai";
-import { CanonicalURI } from "@agentic-profile/auth";
+import { DID } from "@agentic-profile/auth";
 
 import { ServerError } from "../util/net.js"
 import { asJSON } from "./util.js"
@@ -102,7 +101,7 @@ export class VertexAIBridge implements AIProvider {
 
         const messageTail = params.contents.slice(-3);
         const messageCount = params.contents.length;
-        const { canonicalUri, instruction } = completionParams;
+        const { agentDid, instruction } = completionParams;
         console.log(
             `\n\n==== Vertex completion ${this.model} on messages:\n\n`,
             JSON.stringify( messageTail, null, 4 ),
@@ -113,7 +112,7 @@ export class VertexAIBridge implements AIProvider {
         );
 
         return { 
-            reply: { from: canonicalUri, content: reply, created: new Date() } as ChatMessage, 
+            reply: { from: agentDid, content: reply, created: new Date() } as ChatMessage, 
             json, 
             usage, 
             cost, 
@@ -126,17 +125,17 @@ function toMessage( role:string, text:string ) {
     return { role, parts:[{ text }] } as VertexMessage;    
 }
 
-function isAgentMessage( message: ChatMessage, canonicalUri: CanonicalURI ) {
-    return message.from === canonicalUri;
+function isAgentMessage( message: ChatMessage, agentDid: DID ) {
+    return message.from === agentDid;
 }
 
 // { role: 'user'|'assistant'|'system', name:, content: string }
 // => { role: 'user'|'model', parts:[{text}] }
-function convertMessages( messages: ChatMessage[], canonicalUri: CanonicalURI ) {
+function convertMessages( messages: ChatMessage[], agentDid: DID ) {
     if( !messages )
         return [];
     const vMessages = messages.map(m=>{
-        const role = isAgentMessage( m, canonicalUri ) ? 'model' : 'user';
+        const role = isAgentMessage( m, agentDid ) ? 'model' : 'user';
         return toMessage( role, m.content );
     });
 
@@ -187,10 +186,9 @@ function getGenerativeModel( model: string ) {
     });
 }
 
-async function prepareParams( generativeModel: any, { prompt, canonicalUri, messages, instruction }: ChatCompletionParams ) {
+async function prepareParams( generativeModel: any, { prompt, agentDid, messages, instruction }: ChatCompletionParams ) {
     const params = {} as any;
-    const contents = convertMessages( messages, canonicalUri );
-    //if( contents )
+    const contents = convertMessages( messages, agentDid );
     params.contents = contents;
 
     if( prompt ) {

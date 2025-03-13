@@ -1,4 +1,4 @@
-import { CanonicalURI } from "@agentic-profile/auth"
+import { DID } from "@agentic-profile/auth"
 import { ChatMessage } from "../chat/models.js"
 
 export interface TokenCounts {
@@ -14,7 +14,7 @@ export interface MessageContext {
 
 export interface ChatCompletionParams {
     prompt?: string,
-    canonicalUri: CanonicalURI,
+    agentDid: DID,
     messages: ChatMessage[],
     instruction?: string   
 }

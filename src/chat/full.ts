@@ -1,5 +1,5 @@
 import {
-    CanonicalURI
+    DID
 } from "@agentic-profile/auth";
 
 import {
@@ -20,18 +20,19 @@ import { chatCompletion } from "./completion.js";
 import { agentHooks } from "../hooks.js";
 
 
-export async function handleAgentChatMessage({ uid, pathname, envelope, agentSession }: HandleAgentChatMessageParams) {
-    const { canonicalUri, agentUrl: clientAgentUrl } = agentSession;    // client agent URI
+export async function handleAgentChatMessage({ uid, envelope, agentSession }: HandleAgentChatMessageParams) {
+    const { did: clientAgentDid } = agentSession;    // client agent URI
+    const serverAgentDid = "did:example:uid:" + uid;
     const { message, rewind } = envelope;
-    const chatKey = { uid, pathname, canonicalUri, clientAgentUrl } as AgentChatKey;
+    const chatKey = { uid, serverAgentDid, clientAgentDid } as AgentChatKey;
 
     console.log( "handleAgentChatMessage", chatKey, message );
 
     // validate the message
     if( !message )
         throw new ServerError( [4], "Missing chat message" );
-    if( message.from !== canonicalUri )
-        throw new ServerError( [4], "Chat message 'from' does not match session canonicalUri: " + message.from + ' != ' + canonicalUri );
+    if( message.from !== clientAgentDid )
+        throw new ServerError( [4], "Chat message 'from' does not match session canonicalUri: " + message.from + ' != ' + clientAgentDid );
     if( !message.created )
         throw new ServerError( [4], "Chat message missing 'created' property" );
     if( !message.content )
@@ -50,7 +51,7 @@ export async function handleAgentChatMessage({ uid, pathname, envelope, agentSes
     // fetch all messages for AI
     let chat = await storage().fetchAgentChat( chatKey );
     if( !chat ) {
-        console.log( "Failed to find history, creating new chat", uid, canonicalUri );
+        console.log( "Failed to find history, creating new chat", chatKey );
         chat = await storage().ensureAgentChat( chatKey, [ message as ChatMessage ] );
     }
     const history = chat.history;
@@ -60,8 +61,6 @@ export async function handleAgentChatMessage({ uid, pathname, envelope, agentSes
     await storage().recordChatCost( chatKey, cost );
 
     // save reply locally
-    //const replyJSON = JSON.stringify(reply);
-    //await queryResult( INSERT_MESSAGE, [replyJSON,uid,canonicalUri] );
     await storage().insertChatMessage( chatKey, reply );
 
     return { reply };
@@ -70,10 +69,6 @@ export async function handleAgentChatMessage({ uid, pathname, envelope, agentSes
 // profile URI must be canonical!
 export async function rewindChat( chatKey: AgentChatKey, envelope: ChatMessageEnvelope ) {
     const { message, rewind } = envelope; 
-    /*const chat = await queryFirstRow<AgentChat>(
-        "SELECT history FROM agent_chats WHERE uid=? AND profile_uri=?",
-        [uid,canonicalUri]
-    );*/
     const chat = await storage().fetchAgentChat( chatKey );
     if( !chat )
         throw new ServerError([4],`Failed to rewind; could not find chat ${chatKey} ${rewind}`);    
@@ -93,26 +88,21 @@ export async function rewindChat( chatKey: AgentChatKey, envelope: ChatMessageEn
         messages.push( message );
     const historyUpdate = { ...history, messages };
     await storage().updateChatHistory( chatKey, historyUpdate );
-    /*await queryResult(
-        "UPDATE agent_chats SET history=? WHERE uid=? AND profile_uri=?",
-        [ JSON.stringify(historyUpdate),uid,canonicalUri]
-    ); */
 }
 
 export async function generateChatReply( uid: string | number, messages: ChatMessage[] ): Promise<ChatCompletionResult> {
-    const canonicalUri = agentHooks().createCanonicalProfileUri( uid );
+    const agentDid = agentHooks().createAgentDid( uid );
     //const personas = (await fetchPersonas( uid ))?.personas?.filter(e=>!e.hidden);  // except hidden
 
-    //const user = await queryFirstRow<User>("SELECT uid,name FROM users WHERE uid=?",[uid]);
     const user = await storage().fetchAccountFields( uid, "uid,name,credit" );
     if( !user )
         throw new Error("Unable to generate chat reply, cannot find user with id " + uid );
     await ensureBalance( uid, user );
 
     // if there are no messages from me, then introduce myself
-    if( messages.some(e=>e.from === canonicalUri) !== true ) {
-        console.log( 'intro', canonicalUri, messages );
-        return introduceMyself( user, canonicalUri );
+    if( messages.some(e=>e.from === agentDid) !== true ) {
+        console.log( 'intro', agentDid, messages );
+        return introduceMyself( user, agentDid );
     }
 
     // Craft an instruction for AI with my role and goals
@@ -121,12 +111,12 @@ export async function generateChatReply( uid: string | number, messages: ChatMes
     
     //const bridge = selectBridge();
     //return await bridge.completion({ canonicalUri, messages }); // , instruction })
-    return await chatCompletion({ canonicalUri, messages });
+    return await chatCompletion({ agentDid, messages });
 }
 
-function introduceMyself( user: User, canonicalUri: CanonicalURI ): ChatCompletionResult {
+function introduceMyself( user: User, agentDid: DID ): ChatCompletionResult {
     const reply = {
-        from: canonicalUri,
+        from: agentDid,
         content: `My name is ${user.name}. Nice to meet you!`,
         created: new Date()
     } as ChatMessage;

@@ -1,19 +1,16 @@
 import {
-    ProfileURI,
-    CanonicalURI,
+    DID,
     ClientAgentSession
 } from "@agentic-profile/auth";
-import {
-    UserId
-} from "../storage/models.js";
+import { UserId } from "../storage/models.js";
 
 export interface StartAgentChat {
-    profileUri: ProfileURI,
+    profileDid: DID,
     reset?: boolean
 }
 
 export interface ChatMessage {
-    from: CanonicalURI,
+    from: DID,
     content: string,
     created?: Date
 }
@@ -25,11 +22,11 @@ export interface ChatMessageHistory {
 export interface AgentChatKey {
     // server/remote side
     uid: number | string,       // uid that server agent represents (maps to an agentic profile server represents)
-    pathname: string,           // path of server agent; allows multiple agents for each uid
+    serverAgentDid: DID,
 
     // client/caller side
-    canonicalUri: CanonicalURI  // client agent we are chatting with (but may be local)
-    clientAgentUrl?: string     // the clients agent that signed the challenge, if undefined then a "general" chat 
+    clientAgentDid: DID         // client agent we are chatting with (but may be local)
+                                // usually includes a fragment to qualify the exact agent 
 }
 
 export interface AgentChat extends AgentChatKey {
@@ -43,13 +40,13 @@ export interface AgentChat extends AgentChatKey {
 
 export type HandleAgentChatMessageParams = {
     uid: UserId,
-    pathname: string,
+    //pathname: string,
     envelope: ChatMessageEnvelope,
     agentSession: ClientAgentSession    
 }
 
 export interface ChatMessageEnvelope {
-    to: ProfileURI,
+    to: DID,
     message?: ChatMessage,
     rewind?: string
 }

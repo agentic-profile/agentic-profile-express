@@ -3,7 +3,7 @@ import {
     Request
 } from "express";
 import {
-    SignedChallenge,
+    AgenticLoginRequest,
     ClientAgentSession,
     createChallenge,
     handleAuthorization,
@@ -28,6 +28,6 @@ export async function resolveAgentSession( req: Request, res: Response ): Promis
         return await handleAuthorization( authorization, storage() );
 }
 
-export async function agentLogin( signedChallenge: SignedChallenge ) {
-    return await handleLogin( signedChallenge, storage() );
+export async function agentLogin( loginRequest: AgenticLoginRequest ) {
+    return await handleLogin( loginRequest, storage() );
 }

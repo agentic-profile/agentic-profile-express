@@ -5,15 +5,15 @@ import {
 } from "../ai-providers/models.js";
 
 
-export async function chatCompletion({ canonicalUri, messages }: ChatCompletionParams ): Promise<ChatCompletionResult> {
+export async function chatCompletion({ agentDid, messages }: ChatCompletionParams ): Promise<ChatCompletionResult> {
 	//const bridge = selectBridge();
     //return await bridge.completion({ canonicalUri, messages }); // , instruction })
 
     const reply = {
-        from: canonicalUri,
+        from: agentDid,
         content: "Tell me more...",
         created: new Date()
     } as ChatMessage;
-    console.log( "chatCompletion", canonicalUri, messages );
+    console.log( "chatCompletion", agentDid, messages );
     return { reply };
 }

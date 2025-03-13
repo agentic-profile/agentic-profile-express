@@ -21,9 +21,9 @@ export default class Echo implements AIProvider {
         return 'Echo ' + version;
     }
 
-    async completion( { canonicalUri }: ChatCompletionParams ) {
+    async completion( { agentDid }: ChatCompletionParams ) {
         const reply = {
-            from: canonicalUri,
+            from: agentDid,
             content: "Hello",
             created: new Date()
         } as ChatMessage;

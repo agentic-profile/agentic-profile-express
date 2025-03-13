@@ -2,7 +2,7 @@ import express, {
     Response,
     Request
 } from "express";
-import { SignedChallenge } from "@agentic-profile/auth";
+import { AgenticLoginRequest } from "@agentic-profile/auth";
 
 import {
     agentLogin,
@@ -70,7 +70,7 @@ export function openRoutes( options: OpenRouteOptions ) {
 
         const result = await handleAgentChatMessage({
             uid,
-            pathname: req.path,
+            //pathname: req.path,
             envelope: req.body as ChatMessageEnvelope, 
             agentSession
         });
@@ -78,7 +78,7 @@ export function openRoutes( options: OpenRouteOptions ) {
     }));
 
     router.post( "/agent-login", asyncHandler( async (req: Request, res: Response) => {
-        const result = await agentLogin( req.body as SignedChallenge );
+        const result = await agentLogin( req.body as AgenticLoginRequest );
         res.json( result );
     }));
 
