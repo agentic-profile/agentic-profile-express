@@ -1,6 +1,5 @@
 import {
-	OkPacket,
-	//RowDataPacket
+    OkPacket
 } from "mysql2";
 import pool from "./mysql-pool.js";
 import { ServerError } from "../../util/net.js";

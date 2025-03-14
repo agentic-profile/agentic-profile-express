@@ -6,16 +6,16 @@ import { logAxiosResult } from "./util.js";
 
 (async ()=>{
     if( process.argv.length < 3 ) {
-        console.log( "Please provide the agent token from the login request, such as:\n    yarn chat-reply 1:ffgf6sdf76sdf76sdf");
+        console.log( "Please provide the agent token from the login request, such as:\n    node chat-reply 1:ffgf6sdf76sdf76sdf");
         return;
     }
-    const agentToken = process.argv[2];
-    console.log( "Using agent token: ", agentToken );
+    const authToken = process.argv[2];
+    console.log( "Using agent auth token: ", authToken );
 
     const envelope = {
-    	to: 'https://localhost:3003/iam/2',
+    	to: 'did:web:localhost%3A3003:iam:2',
     	message: {
-    		from: 'http://localhost:3003/iam/7',
+    		from: 'did:web:localhost%3A3003:iam:7#agentic-chat',
     		content: "Hello!",
             created: new Date()
     	}
@@ -23,13 +23,13 @@ import { logAxiosResult } from "./util.js";
 
     const auth = {
     	headers: {
-    		Authorization: 'Agentic ' + agentToken
+    		Authorization: 'Agentic ' + authToken
     	}
     }
 
     try {
         const result = await axios.put(
-        	"http://localhost:3003/v1/agents/2/agentic-chat",
+        	"http://localhost:3003/users/2/agentic-chat",
         	envelope,
         	auth
         );
@@ -37,6 +37,6 @@ import { logAxiosResult } from "./util.js";
         logAxiosResult( result );
     } catch (error) {
         logAxiosResult( error );
-        console.error("ERROIR: Failed to chat with reply");
+        console.error("ERROR: Failed to chat with reply");
     }
 })();

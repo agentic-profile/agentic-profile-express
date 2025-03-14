@@ -40,151 +40,64 @@ The easiest way to run this demo is locally.
 
 3. Use CURL to request a chat reply:
 
-    $ curl -X PUT http://localhost:3003/v1/agents/2/agentic-chat
+    $ curl -X PUT http://localhost:3003/users/2/agentic-chat
 
 4. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
 
     {
         "type":"agentic-challenge/1.0",
         "challenge":"1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY",
-        "login":"/v1/agent-login"
+        "login":"/agent-login"
     }
 
     NOTE: Copy the "challenge" from your server's response for the next step.  In the above example the challenge is "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
 
 5. Sign the challenge and login.  (Make sure to replace the string after "node test/agent-login" with the challenge you got from step 4)
 
-    $ node test/general-login &lt;challenge-from-step 4&gt;
-
-    For example:
-
-    $ node test/general-login "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
-
-6. You will get a summary of the login similar to...
-
-    General login...
-    Using challenge:  1:BFfloTjw8WslqaMXkg4p0w5fBsZactY6mde4uhL/4To
-    Using keypair:  {
-        "type": "ed25519",
-        "privateKey": "LMXVpQ4GEwBTiCUprSFETw8ewYCUNnxmB8SN42BHEKQ",
-        "publicKey": "9xi+PJz1HMvJJz3TkTj4w2TBSuKi9YgpevjD1w9Exe4"
-    }
-    HTTP summary: {
-        "request": {
-            "method": "post",
-            "url": "http://localhost:3003/v1/agent-login",
-            
-            ...
-        },
-        "response": {
-            "status": 200,
-            "data": {
-                "agentToken": "eyJpZCI6MSwic2Vzc2lvbktleSI6IjJYU3h1ZHBXV2lxMStKYlZVa2RhVE1ZL282dGxObDJ0VFFuSFJqN1F5UlkifQ"
-            }
-        }
-    }
-
-    Agent token: eyJpZCI6MSwic2Vzc2lvbktleSI6IjJYU3h1ZHBXV2lxMStKYlZVa2RhVE1ZL282dGxObDJ0VFFuSFJqN1F5UlkifQ
-
-7. Use the agent token (session key) to authenticate and generate a chat reply
-
-    $ node test/chat-reply &lt;Agent token from step 6&gt;
-
-    For example:
-
-    node test/chat-reply eyJpZCI6MSwic2Vzc2lvbktleSI6IjJYU3h1ZHBXV2lxMStKYlZVa2RhVE1ZL282dGxObDJ0VFFuSFJqN1F5UlkifQ
-
-
-## Testing an Agentic Profile With Listed Agents With Their Own Public Keys
-
-1. Make sure the local server is started at http://localhost:3003
-
-    $ yarn dev
-
-2. Create a demo agentic profile with public and private keys.
-
-    $ node test/create-agentic-profile
-
-3. Use CURL to request a chat reply:
-
-    $ curl -X PUT http://localhost:3003/v1/agents/1/agentic-chat
-
-4. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
-
-    {
-        "type":"agentic-challenge/1.0",
-        "challenge":"1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY",
-        "login":"/v1/agent-login"
-    }
-
-    NOTE: Copy the "challenge" from your server's response for the next step.  In this case the challenge is "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
-
-5. Sign the challenge and login.  (Make sure to replace the string after "node test/agent-login" with the challenge you got from step 4)
-
-    $ node test/agent-login &lt;challenge from step 4&gt;
+    $ node test/agent-login &lt;challenge-from-step 4&gt;
 
     For example:
 
     $ node test/agent-login "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
 
-6. The agent login script will return with something similar to:
+6. You will get a summary of the login similar to...
 
-    Agent login...
-    Using challenge:  2:MGgSEKHqpgkk4vemmGPEGGkk7Q1Y1hnr97vEmQ5Vwow
-    Using agent and keypair:  {
-        "agent": {
-            "type": "chat",
-            "url": "https://agents.matchwise.ai/agents/7/agentic-chat",
-            "name": "chatbot",
-            "keyring": [
-                {
-                    "name": "chat1",
-                    "type": "ed25519",
-                    "publicKey": "RGaLQIGvRXvmUTfvbo0dd1UhdtKtnIXGmSCCESzb0D0",
-                    "created": "2025-03-03T17:24:38.241Z",
-                    "expires": "2030-01-01T08:00:00.000Z"
-                }
-            ]
-        },
-        "keyring": [
-            {
-                "type": "ed25519",
-                "privateKey": "LMXVpQ4GEwBTiCUprSFETw8ewYCUNnxmB8SN42BHEKQ",
-                "publicKey": "9xi+PJz1HMvJJz3TkTj4w2TBSuKi9YgpevjD1w9Exe4"
-            },
-            {
-                "type": "ed25519",
-                "privateKey": "rxPgWpNGJMkD6kDic9+oiW0Q6MX8QEPCN+pxR38nN9o",
-                "publicKey": "RGaLQIGvRXvmUTfvbo0dd1UhdtKtnIXGmSCCESzb0D0"
-            }
-        ],
-        "keypair": {
-            "type": "ed25519",
-            "privateKey": "rxPgWpNGJMkD6kDic9+oiW0Q6MX8QEPCN+pxR38nN9o",
-            "publicKey": "RGaLQIGvRXvmUTfvbo0dd1UhdtKtnIXGmSCCESzb0D0"
-        }
+    General login...
+    Using challenge:  3:w_XZ3q7rrvE2Rgc0DLUOpjYQ2KwU8t35DVzmncsVT6A
+    Using private jwk:  {
+        "kty": "OKP",
+        "alg": "EdDSA",
+        "crv": "Ed25519",
+        "x": "MOmbGFNlKWZcVZIyp7pMkIuLH5XsxTEbKDCwXFM6p2I",
+        "d": "y6zlZMxU_4iPxyD9xe4l_RUghWxWmfeU8u6GtD4SGX0"
     }
     HTTP summary: {
         "request": {
             "method": "post",
-            "url": "http://localhost:3003/v1/agent-login",
-            ...
+            "url": "http://localhost:3003/agent-login",
+            "headers": {
+                "Accept": "application/json, text/plain, */*",
+                "Content-Type": "application/json",
+                "User-Agent": "axios/1.8.1",
+                "Content-Length": "388",
+                "Accept-Encoding": "gzip, compress, deflate, br"
+            },
+            "data": "{\"jwsSignedChallenge\":\"eyJhbGciOiJFZERTQSJ9.eyJjaGFsbGVuZ2UiOiIzOndfWFozcTdycnZFMlJnYzBETFVPcGpZUTJLd1U4dDM1RFZ6bW5jc1ZUNkEiLCJhdHRlc3QiOnsiYWdlbnREaWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMDM6aWFtOjcjYWdlbnRpYy1jaGF0IiwidmVyaWZpY2F0aW9uSWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMDM6aWFtOjcjYWdlbnQta2V5LTAifX0.43VhsCPRisQTzk1uzJidRcZH2W_YnIXkYy7KPqVaTPOnRP_swAFGSnF0P5e32vJ-xuDYuYsxAbVA69REyvTlDA\"}"
         },
         "response": {
             "status": 200,
             "data": {
-                "agentToken": "eyJpZCI6Miwic2Vzc2lvbktleSI6Ikk1TG5NNnYybE1ackRLUFlDNUlRbVZxOCtrV3RkRmtaaytYU1lzZDFpelUifQ"
+                "authToken": "eyJpZCI6Mywic2Vzc2lvbktleSI6Im1pN01CX1ZOM3kwR0xHS2xuNXA5WWtUVlBTbVBBOEVNcXJQcEl4MDhicUUifQ"
             }
         }
     }
 
-    Agent token: eyJpZCI6Miwic2Vzc2lvbktleSI6Ikk1TG5NNnYybE1ackRLUFlDNUlRbVZxOCtrV3RkRmtaaytYU1lzZDFpelUifQ
+    Agent authorization token: eyJpZCI6Mywic2Vzc2lvbktleSI6Im1pN01CX1ZOM3kwR0xHS2xuNXA5WWtUVlBTbVBBOEVNcXJQcEl4MDhicUUifQ
 
-7. Use the agent token (session key) to authenticate and generate a chat reply
+7. Use the agent authorization token (session key) to authenticate and generate a chat reply
 
-    $ node test/chat-reply %lt;agent token from step 6&gt;
+    $ node test/chat-reply &lt;Agent zuthorization token from step 6&gt;
 
     For example:
 
-    $ node test/chat-reply "eyJpZCI6Miwic2Vzc2lvbktleSI6Ikk1TG5NNnYybE1ackRLUFlDNUlRbVZxOCtrV3RkRmtaaytYU1lzZDFpelUifQ"
-
+    node test/chat-reply eyJpZCI6MSwic2Vzc2lvbktleSI6IjJYU3h1ZHBXV2lxMStKYlZVa2RhVE1ZL282dGxObDJ0VFFuSFJqN1F5UlkifQ

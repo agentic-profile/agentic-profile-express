@@ -101,16 +101,10 @@ export class MySQLStorage implements Storage {
         ); 
     }
 
-    // profileUri might canonical OR vanity => returned agent chat is only canonical
     async ensureAgentChat( key: AgentChatKey, messages?: ChatMessage[] ) {
         if( !messages )
             messages = [];
 
-        //const canonicalUri = await resolveCanonicalProfileUri( profileUri );
-        //const existingChat = await queryFirstRow<AgentChat>(
-        //    `SELECT ${AGENT_CHAT_COLUMNS} FROM agent_chats WHERE uid=? AND profile_uri=?`,
-        //    [uid,canonicalUri]
-        //);
         const existingChat = await this.fetchAgentChat( key );
 
         if( existingChat )
@@ -201,7 +195,7 @@ export class MySQLStorage implements Storage {
         const accounts = await queryRows<Account>( "SELECT uid,created,updated,name,alias,credit FROM users" );
         const challenges = await queryRows<ChallengeRecord>( "SELECT * FROM client_agent_challenges" );
         const clientSessions = await queryRows<any>( "SELECT * FROM client_agent_sessions" );
-        const agentChats = await queryRows<AgentChat>( "SELECT uid,created,updated,pathname,server_agent_did,client_agent_did,cost,aimodel,history FROM agent_chats" );
+        const agentChats = await queryRows<AgentChat>( "SELECT * FROM agent_chats" );
 
         return {
             database: "MySQL",

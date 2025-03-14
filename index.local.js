@@ -7,10 +7,12 @@ import {
     InMemoryStorage,
     MySQLStorage,
     openRoutes,
-    setStorage
+    setStorage,
+    setAgentHooks
 } from './dist/index.js';
 
 import {
+    generateChatReply,
     handleAgentChatMessage
 //} from "./dist/chat/simple.js";
 } from "./dist/chat/full.js";
@@ -22,14 +24,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 app.use("/", express.static(
-    join(__dirname, "www"),
-    { index: 'index.json' }
+    join(__dirname, "www")
 ));
 
 const storage = process.env.AP_STORAGE === 'mysql' ? MySQLStorage : InMemoryStorage;
 setStorage( new storage() );
+setAgentHooks({});
 
-app.use("/v1", openRoutes({
+app.use("/", openRoutes({
     status: { name: "Testing" },
     handleAgentChatMessage
 }));

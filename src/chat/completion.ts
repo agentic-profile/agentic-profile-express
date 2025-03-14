@@ -7,7 +7,7 @@ import {
 
 export async function chatCompletion({ agentDid, messages }: ChatCompletionParams ): Promise<ChatCompletionResult> {
 	//const bridge = selectBridge();
-    //return await bridge.completion({ canonicalUri, messages }); // , instruction })
+    //return await bridge.completion({ agentDid, messages }); // , instruction })
 
     const reply = {
         from: agentDid,

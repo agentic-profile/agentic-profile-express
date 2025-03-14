@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@agentic-profile/auth@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@agentic-profile/auth/-/auth-0.2.0.tgz#8b96248627584a5f52dc3f9233dde94a1907dccc"
-  integrity sha512-Z9W2F8BjniRWJDxCVRu6VIWfLw7vS6c6egIQk94uzxH/qo0qawayR1kVItepv54iN/XW+uVxQ5HE/k9KnmSjZA==
+"@agentic-profile/auth@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@agentic-profile/auth/-/auth-0.2.1.tgz#166bb73b60e63e46166d8ea04f3a63d3d529eab8"
+  integrity sha512-AKpQL1lAnKIP6yxEtD38rBU0OcH3Z6Xz4B9DyYG62jSpcYp2n/k6tvk7VE4gN2l4pOxYOePAaqDTioY69MrVOQ==
   dependencies:
     "@noble/ed25519" "^2.2.3"
     "@types/node" "^22.9.2"

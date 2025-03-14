@@ -44,6 +44,7 @@ export function openRoutes( options: OpenRouteOptions ) {
         res.json({ name:"Agentic Profile Node Service", version:[1,0,0], ...status, started:runningSince, url:baseUrl(req) }); 
     });
 
+    // TODO remove - only for testing!
     router.get( "/storage", asyncHandler( async (req: Request, res: Response) => {
         const data = await storage().dump();
         res.status(200)
@@ -51,7 +52,7 @@ export function openRoutes( options: OpenRouteOptions ) {
             .send( JSON.stringify(data, null, 4) ); // make easier to read ;)
     }));
 
-    // TODO lock this down - only for testing!
+    // TODO remove - only for testing!
     router.post( "/accounts", asyncHandler( async (req: Request, res: Response) => {
         const account = await createAccount( req.body as NewAccountFields );
         res.json({ account });
@@ -60,7 +61,7 @@ export function openRoutes( options: OpenRouteOptions ) {
     // For a third-party agent to post a message to the agent of the given uid
     // If no authorization is provided, or it is expired, then a challenge is issued
     // and the /agent-login should be used to get a session key
-    router.put( "/agents/:uid/agentic-chat", asyncHandler( async (req: Request, res: Response) => {
+    router.put( "/users/:uid/agentic-chat", asyncHandler( async (req: Request, res: Response) => {
         const { uid } = req.params;
 
         const agentSession = await resolveAgentSession( req, res );
@@ -70,7 +71,6 @@ export function openRoutes( options: OpenRouteOptions ) {
 
         const result = await handleAgentChatMessage({
             uid,
-            //pathname: req.path,
             envelope: req.body as ChatMessageEnvelope, 
             agentSession
         });

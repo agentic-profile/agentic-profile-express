@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/agentic-profile/agentic-profile-express#readme",
   "dependencies": {
-    "@agentic-profile/auth": "^0.2.0",
+    "@agentic-profile/auth": "^0.2.1",
     "@google-cloud/vertexai": "^1.9.3",
     "@types/basic-auth": "^1.1.8",
     "@types/cors": "^2.8.17",

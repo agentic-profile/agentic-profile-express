@@ -42,7 +42,7 @@ export function signalError( req: Request, res: Response, err:any ) {
         res.status( errorCodeToStatusCode(err.code) ).json({failure:err});
     } else {
         log(req,500,err);
-        var failure = { code:[5], message:err.toString() };
+        const failure = { code:[5], message:err.toString() };
         res.status( 500 ).json( {failure:failure} );
     }
 }

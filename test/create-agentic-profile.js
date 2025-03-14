@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import {
-    createKeypair
+    createEdDsaJwk
 } from "@agentic-profile/auth";
 
 import { fileURLToPath } from "url";
@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function generateKeys( name ) {
-    const keypair = await createKeypair();
+    const keypair = await createEdDsaJwk();
     const shared = {
         name,
         ...keypair,
@@ -27,41 +27,55 @@ async function generateKeys( name ) {
 
 (async ()=>{
 
-    const { keypair: generalKeypair, shared: generalPublicKey } = await generateKeys();
-    const { keypair: agentKeypair, shared: agentPublicKey } = await generateKeys( 'chat1' );
+    const did = "did:web:localhost%3A3003:iam:7";
+    const jwk = await createEdDsaJwk();
+    const verificationMethod = {
+        id: did + "#agent-key-0",
+        type: "JsonWebKey2020",
+        publicKeyJwk: jwk.publicJwk
+    };
 
     const profile = {
-        name: "General",
-        keyring: [ generalPublicKey ],
-        agents: [
+        "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/suites/jws-2020/v1",
+            "https://iamagentic.org/ns/agentic-profile/v1"
+        ],
+        id: did,
+        name: "Dave",
+        verificationMethod: [],
+        service:[
             {
-                type: "chat",
-                url: "https://agents.matchwise.ai/agents/7/agentic-chat",
-                name: "chatbot",
-                keyring: [ agentPublicKey ]
+                id: did + "#agentic-chat",
+                type: "AgenticChat",
+                serviceEndpoint: "https://localhost:3003/users/7/agent-chat",
+                capabilityInvocation: [
+                    verificationMethod
+                ]
             }
         ]
     };
 
     try {
-        const filePath = join(__dirname, "..", "www", "iam", "7");
-        await mkdir(filePath, { recursive: true });
+        const dir = join(__dirname, "..", "www", "iam", "7");
+        await mkdir(dir, { recursive: true });
 
+        const didPath = join(dir, "did.json");
         await writeFile(
-            join(filePath, "index.json"),
+            didPath,
             JSON.stringify(profile, null, 4),
             "utf8"
         );
 
-        const keyringJSON = JSON.stringify([ generalKeypair, agentKeypair ], null, 4);
+        const keyringJSON = JSON.stringify(jwk, null, 4);
         await writeFile(
-            join(filePath, "keyring.json"),
+            join(dir, "keyring.json"),
             keyringJSON,
             "utf8"
         );
 
-        console.log(`Agentic Profile saved to ${join(filePath, "index.json")}
-With server running, view at http://localhost:3003/iam/7
+        console.log(`Agentic Profile saved to ${didPath}
+With server running, view at http://localhost:3003/iam/7/did.json or via DID at did:web:localhost%3A3003:iam:7
 Shhhh! Keyring for testing... ${keyringJSON}`);
 
         // create account # 2, which will be the person represented by agent/2
@@ -72,7 +86,7 @@ Shhhh! Keyring for testing... ${keyringJSON}`);
         };
 
         try {
-            const axiosResult = await axios.post( "http://localhost:3003/v1/accounts", newAccountFields );
+            const axiosResult = await axios.post( "http://localhost:3003/accounts", newAccountFields );
             logAxiosResult( axiosResult );
         } catch( error ) {
             logAxiosResult( error );    

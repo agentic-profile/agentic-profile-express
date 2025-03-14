@@ -12,7 +12,6 @@ import {
     ChatCompletionResult
 } from "../ai-providers/models.js";
 import { ensureBalance } from "../accounts/billing.js";
-//import { createCanonicalProfileUri } from "../accounts/util.js";
 import { User } from "../storage/models.js";
 import { storage } from "../storage/handle.js";
 import { ServerError } from "../util/net.js";
@@ -32,7 +31,7 @@ export async function handleAgentChatMessage({ uid, envelope, agentSession }: Ha
     if( !message )
         throw new ServerError( [4], "Missing chat message" );
     if( message.from !== clientAgentDid )
-        throw new ServerError( [4], "Chat message 'from' does not match session canonicalUri: " + message.from + ' != ' + clientAgentDid );
+        throw new ServerError( [4], "Chat message 'from' does not match session agentDid: " + message.from + ' != ' + clientAgentDid );
     if( !message.created )
         throw new ServerError( [4], "Chat message missing 'created' property" );
     if( !message.content )
@@ -42,9 +41,6 @@ export async function handleAgentChatMessage({ uid, envelope, agentSession }: Ha
     if( rewind )
         await rewindChat( chatKey, envelope );
     else {
-        //message.from = canonicalUri;  // ensure 'from' is correct
-        //const messageJSON = JSON.stringify(message);
-        //await queryResult( INSERT_MESSAGE, [messageJSON,uid,canonicalUri] );
         await storage().insertChatMessage( chatKey, message, true );
     }
 
@@ -66,7 +62,6 @@ export async function handleAgentChatMessage({ uid, envelope, agentSession }: Ha
     return { reply };
 }
 
-// profile URI must be canonical!
 export async function rewindChat( chatKey: AgentChatKey, envelope: ChatMessageEnvelope ) {
     const { message, rewind } = envelope; 
     const chat = await storage().fetchAgentChat( chatKey );
@@ -109,8 +104,6 @@ export async function generateChatReply( uid: string | number, messages: ChatMes
     //const userGoals = personas.filter(e=>e.meta?.goals).map(e=>e.meta.goals).join('\n\n');
     //const instruction = buildInstruction( user, userGoals );
     
-    //const bridge = selectBridge();
-    //return await bridge.completion({ canonicalUri, messages }); // , instruction })
     return await chatCompletion({ agentDid, messages });
 }
 
