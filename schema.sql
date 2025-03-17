@@ -37,10 +37,10 @@ CREATE TABLE users(
 CREATE TABLE agent_chats(
     # agent chat key
     uid INT NOT NULL,                        # user that agent is representing
-    server_agent_did VARCHAR(255) NOT NULL,  # uid's agent on this system
-    client_agent_did VARCHAR(255) NOT NULL,  # DID (partial of full with fragment) uri of other person/actor/agent (may be on different/remote system)
+    user_agent_did VARCHAR(255) NOT NULL,  # uid's agent on this system
+    peer_agent_did VARCHAR(255) NOT NULL,  # DID (partial of full with fragment) uri of other person/actor/agent (may be on different/remote system)
 
-    UNIQUE INDEX agent_key (uid, server_agent_did, client_agent_did),
+    UNIQUE INDEX agent_key (uid, user_agent_did, peer_agent_did),
 
     # state JSON, # current subject, etc.
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -79,9 +79,11 @@ CREATE TABLE agentic_profile_cache(
 
 # on client side, session token for communicating with remote/server agentUrl
 CREATE TABLE remote_agent_sessions(
-    uid INT NOT NULL, -- implicit my profileUri
-    remote_agent_did VARCHAR(255) NOT NULL, -- server agent we are communicating with
+    uid INT NOT NULL,
+    user_agent_did VARCHAR(255) NOT NULL,   -- my user agent, matches uid
+    peer_agent_did VARCHAR(255) NOT NULL,   -- server agent we are communicating with
+    peer_service_url TINYTEXT NOT NULL,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    agent_token TEXT NOT NULL,
-    UNIQUE(uid,remote_agent_did)
+    auth_token TEXT NOT NULL,
+    UNIQUE(uid,user_agent_did,peer_agent_did)
 );

@@ -26,9 +26,9 @@ import {
 import { ServerError } from "../../util/net.js";
 
 
-const AGENT_CHAT_COLUMNS = "uid,server_agent_did as serverAgentDid,client_agent_did as clientAgentDid,created,updated,aimodel,cost,history";
+const AGENT_CHAT_COLUMNS = "uid,user_agent_did as userAgentDid,peer_agent_did as peerAgentDid,created,updated,aimodel,cost,history";
 
-const MATCHES_AGENT_CHAT = "uid=? AND server_agent_did=? AND client_agent_did=?";
+const MATCHES_AGENT_CHAT = "uid=? AND user_agent_did=? AND peer_agent_did=?";
 
 const INSERT_MESSAGE = `UPDATE agent_chats
     SET history = JSON_SET(
@@ -40,8 +40,8 @@ const INSERT_MESSAGE = `UPDATE agent_chats
     )
     WHERE ${MATCHES_AGENT_CHAT}`;
 
-function matchesChatParams( { uid, serverAgentDid, clientAgentDid }: AgentChatKey ) {
-    return [ uid, serverAgentDid, clientAgentDid ];
+function matchesChatParams( { uid, userAgentDid, peerAgentDid }: AgentChatKey ) {
+    return [ uid, userAgentDid, peerAgentDid ];
 }
 
 export class MySQLStorage implements Storage {
@@ -112,8 +112,8 @@ export class MySQLStorage implements Storage {
 
         const insert = {
             uid: key.uid,
-            server_agent_did: key.serverAgentDid,
-            client_agent_did: key.clientAgentDid,
+            user_agent_did: key.userAgentDid,
+            peer_agent_did: key.peerAgentDid,
             history: JSON.stringify({messages})
         };
         await queryResult( "INSERT INTO agent_chats SET ?", [insert] );
@@ -125,10 +125,10 @@ export class MySQLStorage implements Storage {
     }
 
     async fetchAgentChat( key: AgentChatKey ) {
-        return await queryFirstRow<AgentChat>(
-            `SELECT ${AGENT_CHAT_COLUMNS} FROM agent_chats WHERE ${MATCHES_AGENT_CHAT}`,
-            matchesChatParams(key)
-        ) ?? undefined;  
+        const sql = `SELECT ${AGENT_CHAT_COLUMNS} FROM agent_chats WHERE ${MATCHES_AGENT_CHAT}`;
+        const params = matchesChatParams(key);
+        console.log( 'fetchAgentChat', sql, params );
+        return await queryFirstRow<AgentChat>( sql, params ) ?? undefined;  
     }
 
 
@@ -148,10 +148,10 @@ export class MySQLStorage implements Storage {
     // server challenge and attestation
     //
 
-    async saveClientSession( sessionKey: string, did: DID ): Promise<number> {
+    async saveClientSession( sessionKey: string, agentDid: DID ): Promise<number> {
         const params = [{
             session_key: sessionKey,
-            did
+            agent_did: agentDid
         }];
         const { insertId: id } = await queryResult( "INSERT INTO client_agent_sessions SET ?", params );
         return id;
@@ -163,7 +163,7 @@ export class MySQLStorage implements Storage {
             id,
             created: session.created,
             sessionKey: session.session_key,
-            did: session.did
+            agentDid: session.agent_did
         } as ClientAgentSession : undefined;
     }
 
@@ -192,7 +192,7 @@ export class MySQLStorage implements Storage {
     //
 
     async dump() {
-        const accounts = await queryRows<Account>( "SELECT uid,created,updated,name,alias,credit FROM users" );
+        const accounts = await queryRows<Account>( "SELECT uid,created,updated,name,roles,media,social,credit FROM users" );
         const challenges = await queryRows<ChallengeRecord>( "SELECT * FROM client_agent_challenges" );
         const clientSessions = await queryRows<any>( "SELECT * FROM client_agent_sessions" );
         const agentChats = await queryRows<AgentChat>( "SELECT * FROM agent_chats" );

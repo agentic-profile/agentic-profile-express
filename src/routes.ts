@@ -61,7 +61,7 @@ export function openRoutes( options: OpenRouteOptions ) {
     // For a third-party agent to post a message to the agent of the given uid
     // If no authorization is provided, or it is expired, then a challenge is issued
     // and the /agent-login should be used to get a session key
-    router.put( "/users/:uid/agentic-chat", asyncHandler( async (req: Request, res: Response) => {
+    router.put( "/users/:uid/agent-chats", asyncHandler( async (req: Request, res: Response) => {
         const { uid } = req.params;
 
         const agentSession = await resolveAgentSession( req, res );

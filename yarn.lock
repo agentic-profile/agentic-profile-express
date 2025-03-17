@@ -2,13 +2,12 @@
 # yarn lockfile v1
 
 
-"@agentic-profile/auth@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@agentic-profile/auth/-/auth-0.2.1.tgz#166bb73b60e63e46166d8ea04f3a63d3d529eab8"
-  integrity sha512-AKpQL1lAnKIP6yxEtD38rBU0OcH3Z6Xz4B9DyYG62jSpcYp2n/k6tvk7VE4gN2l4pOxYOePAaqDTioY69MrVOQ==
+"@agentic-profile/auth@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@agentic-profile/auth/-/auth-0.2.2.tgz#c2d16a8f119fa5574e33eab5c433149dfce2af93"
+  integrity sha512-qBAB+7AbkoeLcNofQFOUNu0pddiPqpgclhB1bUFwieYwQlB2a27YIAA1CGAeWd60r+tWTAN3Eh+wW72azWnKgw==
   dependencies:
     "@noble/ed25519" "^2.2.3"
-    "@types/node" "^22.9.2"
     axios "^1.7.9"
     did-resolver "^4.1.0"
 
@@ -735,7 +734,7 @@ destroy@1.2.0:
 
 did-resolver@^4.1.0:
   version "4.1.0"
-  resolved "https://registry.yarnpkg.com/did-resolver/-/did-resolver-4.1.0.tgz#740852083c4fd5bf9729d528eca5d105aff45eb6"
+  resolved "https://registry.npmjs.org/did-resolver/-/did-resolver-4.1.0.tgz"
   integrity sha512-S6fWHvCXkZg2IhS4RcVHxwuyVejPR7c+a4Go0xbQ9ps5kILa8viiYQgrM4gfTyeTjJ0ekgJH9gk/BawTpmkbZA==
 
 diff@^4.0.1:

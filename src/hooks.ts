@@ -1,4 +1,8 @@
-import { DID } from "@agentic-profile/auth";
+import {
+    DID,
+    getWebDidResolver
+} from "@agentic-profile/auth";
+import { Resolver } from "did-resolver";
 
 import { UserId } from "./storage/models.js";
 import { ChatMessage } from "./chat/models.js";
@@ -7,16 +11,24 @@ import { createAgentDid } from "./accounts/util.js";
 import { generateChatReply } from "./chat/full.js";
 
 export interface AgentHooks {
-    generateChatReply: ( uid: UserId, history: ChatMessage[] ) => Promise<ChatCompletionResult>;
+    generateChatReply: ( uid: UserId, agentDid: DID, history: ChatMessage[] ) => Promise<ChatCompletionResult>;
     createAgentDid: ( uid: UserId ) => DID;
+    didResolver: Resolver
+}
+
+export interface AgentHookOverrides {
+    generateChatReply?: ( uid: UserId, agentDid: DID, history: ChatMessage[] ) => Promise<ChatCompletionResult>;
+    createAgentDid?: ( uid: UserId ) => DID;
+    didResolver?: Resolver
 }
 
 const defaultHooks = {
     generateChatReply,
-    createAgentDid
+    createAgentDid,
+    didResolver: new Resolver( getWebDidResolver() )
 };
 
-export function setAgentHooks( hooks: AgentHooks ) {
+export function setAgentHooks( hooks: AgentHookOverrides ) {
     const update = { ...defaultHooks, ...hooks };
     (globalThis as any).__hooks = update;
     console.log( 'setAgentHooks', update );

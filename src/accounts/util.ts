@@ -20,5 +20,5 @@ export function maybeDebugUrl( url: string ): string {
 
 // A general DID for the user, without specifying an exact agent
 export function createAgentDid( uid: number | string ) {
-    return `did:example:uid:${uid}`;
+    return `did:web:example.com:iam:${uid}`;
 }

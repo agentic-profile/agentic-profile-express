@@ -5,7 +5,8 @@ import {
 import { UserId } from "../storage/models.js";
 
 export interface StartAgentChat {
-    profileDid: DID,
+    userAgentDid: DID,    // MAY also specify agent as did:web:example.com/dave#agent-7
+    peerAgentDid: DID,
     reset?: boolean
 }
 
@@ -22,10 +23,10 @@ export interface ChatMessageHistory {
 export interface AgentChatKey {
     // server/remote side
     uid: number | string,       // uid that server agent represents (maps to an agentic profile server represents)
-    serverAgentDid: DID,
+    userAgentDid: DID,
 
     // client/caller side
-    clientAgentDid: DID         // client agent we are chatting with (but may be local)
+    peerAgentDid: DID           // client/peer agent we are chatting with (but may be local)
                                 // usually includes a fragment to qualify the exact agent 
 }
 
@@ -40,14 +41,13 @@ export interface AgentChat extends AgentChatKey {
 
 export type HandleAgentChatMessageParams = {
     uid: UserId,
-    //pathname: string,
     envelope: ChatMessageEnvelope,
     agentSession: ClientAgentSession    
 }
 
 export interface ChatMessageEnvelope {
     to: DID,
-    message?: ChatMessage,
+    message: ChatMessage,
     rewind?: string
 }
 
