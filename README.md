@@ -40,7 +40,7 @@ The easiest way to run this demo is locally.
 
 3. Use CURL to request a chat reply:
 
-    $ curl -X PUT http://localhost:3003/users/2/agentic-chat
+    $ curl -X PUT http://localhost:3003/users/2/agent-chats
 
 4. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
 

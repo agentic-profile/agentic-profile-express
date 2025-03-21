@@ -29,7 +29,7 @@ import { logAxiosResult } from "./util.js";
 
     try {
         const result = await axios.put(
-        	"http://localhost:3003/users/2/agentic-chat",
+        	"http://localhost:3003/users/2/agent-chats",
         	envelope,
         	auth
         );

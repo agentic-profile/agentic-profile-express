@@ -1,6 +1,6 @@
 {
   "name": "@agentic-profile/express",
-  "version": "0.2.1",
+  "version": "0.2.4",
   "description": "Framework for a Node Express based service for AI Agents using the Agentic Profile protocols",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,7 @@
   },
   "files": [
     "dist",
-    "local-node.js",
+    "index.local.js",
     "README.md"
   ],
   "type": "module",
@@ -31,7 +31,10 @@
   },
   "homepage": "https://github.com/agentic-profile/agentic-profile-express#readme",
   "dependencies": {
-    "@agentic-profile/auth": "^0.2.2",
+    "@agentic-profile/ai-provider": "^0.2.4",
+    "@agentic-profile/auth": "^0.2.4",
+    "@agentic-profile/chat": "^0.2.6",
+    "@agentic-profile/common": "^0.2.4",
     "@google-cloud/vertexai": "^1.9.3",
     "axios": "^1.7.9",
     "basic-auth": "^2.0.1",
@@ -44,13 +47,13 @@
     "mysql2": "^3.12.0"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2",
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.2",
     "@types/basic-auth": "^1.1.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/morgan": "^1.9.9",
-    "@types/node": "^22.9.2"
+    "@types/node": "^22.9.2",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.2"
   }
 }

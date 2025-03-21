@@ -20,31 +20,35 @@ import { inherits } from 'util'
 
 // Use this method when we DON'T have an Error object
 export function signalNotOk( req:Request, res:Response, code:number[], message:string, details:any ) {
-    var err = { code:code, message:message, details:details };
-    log(req,code,err);
-    res.status( errorCodeToStatusCode(code) ).json({failure:err});
+    const failure = { code, message, details };
+    log(req,failure);
+    res.status( errorCodeToStatusCode(code) ).json({failure});
 }
 
-function errorCodeToStatusCode( code: number[] | undefined ) {
-    if( !code )
+function errorCodeToStatusCode( code: any ) {
+    if( !code || !Array.isArray(code) )
         return 500;
-    let result = code[0]*100;
-    if( code.length > 1 )
-        result += code[1];
+    const parts = code as any[];
+    if( parts.length === 0 || parts.some(e=>Number.isFinite(e) !== true) )
+        return 500;
+
+    let result = parts[0]*100;
+    if( parts.length > 1 )
+        result += parts[1];
 
     return result;
 }
 
 // Use this method when we have an Error object
 export function signalError( req: Request, res: Response, err:any ) {
-    if( err instanceof ServerError && err.code ) {
-        log(req,err.code,err);
-        res.status( errorCodeToStatusCode(err.code) ).json({failure:err});
-    } else {
-        log(req,500,err);
-        const failure = { code:[5], message:err.toString() };
-        res.status( 500 ).json( {failure:failure} );
+    const { code, name, message, stack } = err;
+    const failure = {
+        code,
+        message: message ?? name,
+        details: stack?.split(/\n/).map((e:string)=>e.trim()).slice(0,3)
     }
+    log(req,failure,err);
+    res.status( errorCodeToStatusCode(code) ).json({ failure });
 }
 
 export class ServerError extends Error {
@@ -67,16 +71,16 @@ export class ServerError extends Error {
 // Ensure proper inheritance of Error class in older environments
 inherits(ServerError, Error);
 
-function log( req: Request, code: number[] | number, err: any ) {
+function log( req: Request, failure: any, err?: any ) {
     const auth = (req as any).auth;
-    const details = {
-        code:code,
-        url:req.originalUrl,
-        headers:req.headers,
+    console.error( 'ERROR:', JSON.stringify({
+        url: req.originalUrl,
+        headers: req.headers,
         auth,
-        body:req.body    
-    }
-    console.error( 'ERROR: ' + JSON.stringify(details,null,4), err.message );
+        body: req.body,
+        failure,
+        errorMessage: err?.message
+    },null,4) );
 }
 
 export function baseUrl( req: Request ) {
@@ -103,3 +107,22 @@ export function sendBearer401( res: Response, reason: string ) {
     const failure = { code:[4,1], message: 'Access Denied: ' + reason };
     res.json({ failure });   
 }
+
+/*
+export function maybeDebugUrl( url: string ): string {
+
+    if( process.env.NODE_ENV !== 'development' )
+        return url;
+
+    try {
+        const parsedUrl = new URL(url);
+        parsedUrl.protocol = 'http:';
+        parsedUrl.hostname = 'localhost';
+        parsedUrl.port = '3003';
+
+        console.log( 'Converted',url,'to',parsedUrl.toString());
+        return parsedUrl.toString();
+    } catch (error) {
+        throw new Error('Invalid URL provided');
+    }
+}*/

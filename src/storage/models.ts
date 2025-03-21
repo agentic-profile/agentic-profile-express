@@ -1,26 +1,23 @@
-import {
-    AgentAuthStore
-} from "@agentic-profile/auth";
+import { AgentAuthStorage } from "@agentic-profile/auth";
+import { ChatMessage } from "@agentic-profile/common";
 import {
     AgentChat,
     AgentChatKey,
-    ChatMessage,
-    ChatMessageHistory
-} from "../chat/models.js";
+    ChatMessageHistory,
+    ChatStorage
+} from "@agentic-profile/chat";
 
 export type UserId = string | number;
 
 export interface User {
-    uid: number,
+    uid: UserId,
     name: string,
-    alias?: string,
     created: Date
 }
 
 export interface NewAccountFields {
-    uid?: number,   // request this user id
+    uid: UserId,
     name: string,
-    alias?: string,
     credit?: number
 }
 
@@ -28,7 +25,7 @@ export interface Account extends User {
     credit?: number
 }
 
-export interface Storage extends AgentAuthStore {
+export interface Storage extends AgentAuthStorage, ChatStorage {
     // Accounts
     createAccount: ( account: NewAccountFields ) => Promise<Account>,
     fetchAccountFields: ( uid: UserId, fields?: string ) => Promise<Account | undefined>,

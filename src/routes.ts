@@ -3,22 +3,26 @@ import express, {
     Request
 } from "express";
 import { AgenticLoginRequest } from "@agentic-profile/auth";
-
 import {
-    agentLogin,
-    resolveAgentSession,
-} from "./agentic-auth.js";
+    ChatMessageEnvelope,
+    HandleAgentChatMessageParams
+} from "@agentic-profile/chat";
+import {
+    agentHooks,
+    CommonHooks
+} from "@agentic-profile/common";
 import {
     asyncHandler,
     baseUrl,
 } from "./util/net.js"
 import {
-    ChatMessageEnvelope,
-    HandleAgentChatMessageParams
-} from "./chat/models.js";
-import { createAccount } from "./accounts/management.js";
+    agentLogin,
+    resolveAgentSession
+} from "./agentic-auth.js";
+
+//import { createAccount } from "./accounts/management.js";
 import { NewAccountFields } from "./storage/models.js";
-import { storage } from "./storage/handle.js";
+
 
 export interface Status {
     name?: string,
@@ -46,7 +50,7 @@ export function openRoutes( options: OpenRouteOptions ) {
 
     // TODO remove - only for testing!
     router.get( "/storage", asyncHandler( async (req: Request, res: Response) => {
-        const data = await storage().dump();
+        const data = await agentHooks<CommonHooks>().storage.dump();
         res.status(200)
             .set('Content-Type', 'application/json')
             .send( JSON.stringify(data, null, 4) ); // make easier to read ;)
@@ -54,7 +58,8 @@ export function openRoutes( options: OpenRouteOptions ) {
 
     // TODO remove - only for testing!
     router.post( "/accounts", asyncHandler( async (req: Request, res: Response) => {
-        const account = await createAccount( req.body as NewAccountFields );
+        const { storage } = agentHooks<Storage>();
+        const account = await storage.createAccount( req.body as NewAccountFields );
         res.json({ account });
     }));
 

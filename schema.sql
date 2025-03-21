@@ -66,7 +66,7 @@ CREATE TABLE client_agent_challenges(
 CREATE TABLE client_agent_sessions(
     id INT PRIMARY KEY AUTO_INCREMENT,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    did TINYTEXT NOT NULL, -- person this is from
+    agent_did VARCHAR(255) NOT NULL,    -- client agent that authenticated with us
     session_key TINYTEXT NOT NULL
 );
 

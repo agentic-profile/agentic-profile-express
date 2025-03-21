@@ -1,15 +1,18 @@
 import {
-    DID,
     ChallengeRecord,
     ClientAgentSession
 } from "@agentic-profile/auth";
 
 import {
+    ChatMessage,
+    DID
+} from "@agentic-profile/common";
+
+import {
     AgentChat,
     AgentChatKey,
-    ChatMessage,
     ChatMessageHistory
-} from "../../chat/models.js";
+} from "@agentic-profile/chat";
 
 import {
     Account,
@@ -51,8 +54,8 @@ export class MySQLStorage implements Storage {
     //
 
     async createAccount( fields: NewAccountFields ) {
-        const { uid, name, alias, credit = 2 } = fields;
-        const account = { name, alias, credit, created: new Date() } as Account;
+        const { uid, name, credit = 2 } = fields;
+        const account = { name, credit, created: new Date() } as Account;
 
         if( uid ) {
             const found = await queryFirstRow<Account>("SELECT name FROM users WHERE uid=?",[uid]);

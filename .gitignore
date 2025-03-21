@@ -1,5 +1,7 @@
+function.zip
 .DS_Store
 www/iam/*
+google-keys.json
 
 # Logs
 logs

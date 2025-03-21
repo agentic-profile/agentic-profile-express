@@ -1,8 +1,16 @@
 import {
-    DID,
+    ChatMessage,
+    DID
+} from "@agentic-profile/common";
+import {
     ChallengeRecord,
     ClientAgentSession
 } from "@agentic-profile/auth";
+import {
+    AgentChat,
+    AgentChatKey,
+    ChatMessageHistory
+} from "@agentic-profile/chat";
 
 import {
     Account,
@@ -10,12 +18,6 @@ import {
     Storage,
     UserId
 } from "./models.js";
-import {
-    AgentChat,
-    AgentChatKey,
-    ChatMessage,
-    ChatMessageHistory
-} from "../chat/models.js";
 import { ServerError } from "../util/net.js";
 
 let nextUserId = 1;
@@ -110,8 +112,8 @@ export class InMemoryStorage implements Storage {
         } else
             uid = nextUserId++;
 
-        const { name, alias, credit = 2 } = fields;
-        const account = { name, alias, credit, uid, created: new Date() };
+        const { name, credit = 2 } = fields;
+        const account = { name, credit, uid, created: new Date() };
         accounts.set( ''+uid, account );
         console.log( 'createAccount', account, accounts );
         return account;

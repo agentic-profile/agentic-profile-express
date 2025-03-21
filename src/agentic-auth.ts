@@ -3,14 +3,22 @@ import {
     Request
 } from "express";
 import {
+    AgentAuthStorage,
     AgenticLoginRequest,
     ClientAgentSession,
     createChallenge,
     handleAuthorization,
     handleLogin
 } from "@agentic-profile/auth";
+import {
+    agentHooks,
+    CommonHooks
+} from "@agentic-profile/common";
 
-import { storage } from "./storage/handle.js";
+
+function storage() {
+    return agentHooks<CommonHooks>().storage as AgentAuthStorage;
+}
 
 // returns:
 // - agent session
