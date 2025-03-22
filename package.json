@@ -1,6 +1,6 @@
 {
   "name": "@agentic-profile/express",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Framework for a Node Express based service for AI Agents using the Agentic Profile protocols",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/agentic-profile/agentic-profile-express#readme",
   "dependencies": {
-    "@agentic-profile/ai-provider": "^0.2.4",
+    "@agentic-profile/ai-provider": "^0.2.5",
     "@agentic-profile/auth": "^0.2.4",
     "@agentic-profile/chat": "^0.2.6",
     "@agentic-profile/common": "^0.2.4",

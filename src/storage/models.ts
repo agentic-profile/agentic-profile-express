@@ -1,4 +1,4 @@
-import { AgentAuthStorage } from "@agentic-profile/auth";
+import { ClientAgentSessionStorage } from "@agentic-profile/auth";
 import { ChatMessage } from "@agentic-profile/common";
 import {
     AgentChat,
@@ -25,7 +25,7 @@ export interface Account extends User {
     credit?: number
 }
 
-export interface Storage extends AgentAuthStorage, ChatStorage {
+export interface Storage extends ClientAgentSessionStorage, ChatStorage {
     // Accounts
     createAccount: ( account: NewAccountFields ) => Promise<Account>,
     fetchAccountFields: ( uid: UserId, fields?: string ) => Promise<Account | undefined>,

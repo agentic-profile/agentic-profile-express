@@ -3,12 +3,10 @@ import {
     Request
 } from "express";
 import {
-    AgentAuthStorage,
-    AgenticLoginRequest,
     ClientAgentSession,
+    ClientAgentSessionStorage,
     createChallenge,
     handleAuthorization,
-    handleLogin
 } from "@agentic-profile/auth";
 import {
     agentHooks,
@@ -17,7 +15,7 @@ import {
 
 
 function storage() {
-    return agentHooks<CommonHooks>().storage as AgentAuthStorage;
+    return agentHooks<CommonHooks>().storage as ClientAgentSessionStorage;
 }
 
 // returns:
@@ -26,16 +24,12 @@ function storage() {
 // - or throws an Error
 export async function resolveAgentSession( req: Request, res: Response ): Promise<ClientAgentSession | null> {
     const { authorization } = req.headers;
-    if( !authorization ) {
-        const challenge = await createChallenge( storage() );
-        res.status(401)
-            .set('Content-Type', 'application/json')
-            .send( JSON.stringify(challenge, null, 4) );
-        return null;
-    } else
+    if( authorization )
         return await handleAuthorization( authorization, storage() );
-}
 
-export async function agentLogin( loginRequest: AgenticLoginRequest ) {
-    return await handleLogin( loginRequest, storage() );
+    const challenge = await createChallenge( storage() );
+    res.status(401)
+        .set('Content-Type', 'application/json')
+        .send( JSON.stringify(challenge, null, 4) );
+    return null;  
 }

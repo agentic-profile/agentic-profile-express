@@ -2,7 +2,6 @@ import express, {
     Response,
     Request
 } from "express";
-import { AgenticLoginRequest } from "@agentic-profile/auth";
 import {
     ChatMessageEnvelope,
     HandleAgentChatMessageParams
@@ -11,16 +10,12 @@ import {
     agentHooks,
     CommonHooks
 } from "@agentic-profile/common";
+
 import {
     asyncHandler,
     baseUrl,
 } from "./util/net.js"
-import {
-    agentLogin,
-    resolveAgentSession
-} from "./agentic-auth.js";
-
-//import { createAccount } from "./accounts/management.js";
+import { resolveAgentSession } from "./agentic-auth.js";
 import { NewAccountFields } from "./storage/models.js";
 
 
@@ -79,11 +74,6 @@ export function openRoutes( options: OpenRouteOptions ) {
             envelope: req.body as ChatMessageEnvelope, 
             agentSession
         });
-        res.json( result );
-    }));
-
-    router.post( "/agent-login", asyncHandler( async (req: Request, res: Response) => {
-        const result = await agentLogin( req.body as AgenticLoginRequest );
         res.json( result );
     }));
 

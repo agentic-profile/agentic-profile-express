@@ -1,10 +1,7 @@
+import { ChatMessage } from "@agentic-profile/common";
 import {
-    ChatMessage,
-    DID
-} from "@agentic-profile/common";
-import {
-    ChallengeRecord,
-    ClientAgentSession
+    ClientAgentSession,
+    ClientAgentSessionUpdates,
 } from "@agentic-profile/auth";
 import {
     AgentChat,
@@ -22,9 +19,6 @@ import { ServerError } from "../util/net.js";
 
 let nextUserId = 1;
 const accounts = new Map<string,Account>();
-
-let nextChallengeId = 1;
-const challenges = new Map<number,ChallengeRecord>();
 
 let nextSessionId = 1;
 const clientSessions = new Map<number,ClientAgentSession>();
@@ -45,7 +39,6 @@ export class InMemoryStorage implements Storage {
         return {
             database: 'memory',
             accounts: mapToObject( accounts ),
-            challenges: mapToObject( challenges ),
             clientSessions: mapToObject( clientSessions ),
             agentChats: mapToObject( agentChats )
         }
@@ -144,32 +137,21 @@ export class InMemoryStorage implements Storage {
     // Sessions
     //
 
-    async saveClientSession( sessionKey: string, agentDid: DID ) {
+    async createClientAgentSession( challenge: string ) {
         const id = nextSessionId++;
-        clientSessions.set( id, {
-            id,
-            created: new Date(),
-            agentDid,
-            sessionKey
-        });
-        return id;  
-    }
-
-    async fetchClientSession( id: number ) {
-        return clientSessions.get( id ); 
-    }
-
-    async saveChallenge( challenge: string ) {
-        const id = nextChallengeId++;
-        challenges.set( id, { id, challenge, created: new Date() } );
+        clientSessions.set( id, { id, challenge, created: new Date() } as ClientAgentSession );
         return id;
     }
 
-    async fetchChallenge( id: number ) {
-        return challenges.get( id );
+    async fetchClientAgentSession( id:number ) {
+        return clientSessions.get( id );  
     }
 
-    async deleteChallenge( id: number ) {
-        challenges.delete( id );
+    async updateClientAgentSession( id:number, updates:ClientAgentSessionUpdates ) {
+        const session = clientSessions.get( id );
+        if( !session )
+            throw new Error("Failed to find client session by id: " + id );
+        else
+            clientSessions.set( id, { ...session, ...updates } );
     }
 }

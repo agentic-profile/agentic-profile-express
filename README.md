@@ -28,7 +28,7 @@ The easiest way to run this demo is locally.
     $ yarn dev
 
 
-## Testing a General Agentic Profile With No Client Agent
+## Testing A General Agentic Profile With A Client Agent
 
 1. Make sure the local server is started at http://localhost:3003
 
@@ -45,59 +45,19 @@ The easiest way to run this demo is locally.
 4. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
 
     {
-        "type":"agentic-challenge/1.0",
-        "challenge":"1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY",
-        "login":"/agent-login"
-    }
-
-    NOTE: Copy the "challenge" from your server's response for the next step.  In the above example the challenge is "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
-
-5. Sign the challenge and login.  (Make sure to replace the string after "node test/agent-login" with the challenge you got from step 4)
-
-    $ node test/agent-login &lt;challenge-from-step 4&gt;
-
-    For example:
-
-    $ node test/agent-login "1:EbC3m7GQA8W+SNXcE5uZRgw6DguCShQGYTAPINCf2YY"
-
-6. You will get a summary of the login similar to...
-
-    General login...
-    Using challenge:  3:w_XZ3q7rrvE2Rgc0DLUOpjYQ2KwU8t35DVzmncsVT6A
-    Using private jwk:  {
-        "kty": "OKP",
-        "alg": "EdDSA",
-        "crv": "Ed25519",
-        "x": "MOmbGFNlKWZcVZIyp7pMkIuLH5XsxTEbKDCwXFM6p2I",
-        "d": "y6zlZMxU_4iPxyD9xe4l_RUghWxWmfeU8u6GtD4SGX0"
-    }
-    HTTP summary: {
-        "request": {
-            "method": "post",
-            "url": "http://localhost:3003/agent-login",
-            "headers": {
-                "Accept": "application/json, text/plain, */*",
-                "Content-Type": "application/json",
-                "User-Agent": "axios/1.8.1",
-                "Content-Length": "388",
-                "Accept-Encoding": "gzip, compress, deflate, br"
-            },
-            "data": "{\"jwsSignedChallenge\":\"eyJhbGciOiJFZERTQSJ9.eyJjaGFsbGVuZ2UiOiIzOndfWFozcTdycnZFMlJnYzBETFVPcGpZUTJLd1U4dDM1RFZ6bW5jc1ZUNkEiLCJhdHRlc3QiOnsiYWdlbnREaWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMDM6aWFtOjcjYWdlbnRpYy1jaGF0IiwidmVyaWZpY2F0aW9uSWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMDM6aWFtOjcjYWdlbnQta2V5LTAifX0.43VhsCPRisQTzk1uzJidRcZH2W_YnIXkYy7KPqVaTPOnRP_swAFGSnF0P5e32vJ-xuDYuYsxAbVA69REyvTlDA\"}"
-        },
-        "response": {
-            "status": 200,
-            "data": {
-                "authToken": "eyJpZCI6Mywic2Vzc2lvbktleSI6Im1pN01CX1ZOM3kwR0xHS2xuNXA5WWtUVlBTbVBBOEVNcXJQcEl4MDhicUUifQ"
-            }
+        "type": "agentic-challenge/0.3",
+        "challenge": {
+            "id": 1,
+            "random": "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
         }
     }
 
-    Agent authorization token: eyJpZCI6Mywic2Vzc2lvbktleSI6Im1pN01CX1ZOM3kwR0xHS2xuNXA5WWtUVlBTbVBBOEVNcXJQcEl4MDhicUUifQ
+    NOTE: Copy the "id" and "random" from your server's response for the next step.  In the above example the id is "1" and the random is "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
 
-7. Use the agent authorization token (session key) to authenticate and generate a chat reply
+5. Use the agent authorization token (session key) to authenticate and generate a chat reply
 
-    $ node test/chat-reply &lt;Agent zuthorization token from step 6&gt;
+    $ node test/chat-reply &lt;id from step 4&gt; &lt;random from step 4&gt;
 
     For example:
 
-    node test/chat-reply eyJpZCI6MSwic2Vzc2lvbktleSI6IjJYU3h1ZHBXV2lxMStKYlZVa2RhVE1ZL282dGxObDJ0VFFuSFJqN1F5UlkifQ
+    node test/chat-reply 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
