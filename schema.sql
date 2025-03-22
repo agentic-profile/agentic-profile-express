@@ -55,19 +55,13 @@ CREATE TABLE agent_chats(
     history JSON # format of JSON is { messages:[ { from: "did:web:iamagentic.ai/7", contents: "Hello", created: <ISO8601 string> }, ... ] }
 );
 
-# challenge created on remote end, and returned to client agent
-CREATE TABLE client_agent_challenges(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    challenge TINYTEXT NOT NULL
-);
-
 # sessions created by agent server side, and session key given to client agent
 CREATE TABLE client_agent_sessions(
     id INT PRIMARY KEY AUTO_INCREMENT,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    agent_did VARCHAR(255) NOT NULL,    -- client agent that authenticated with us
-    session_key TINYTEXT NOT NULL
+    challenge TINYTEXT NOT NULL,
+    agent_did VARCHAR(255),    -- client agent that authenticated with us
+    auth_token TEXT
 );
 
 CREATE TABLE agentic_profile_cache(

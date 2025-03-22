@@ -3,8 +3,8 @@ import express, {
     Request
 } from "express";
 import {
-    ChatMessageEnvelope,
-    HandleAgentChatMessageParams
+    ChatHooks,
+    ChatMessageEnvelope
 } from "@agentic-profile/chat";
 import {
     agentHooks,
@@ -26,15 +26,9 @@ export interface Status {
 
 export interface OpenRouteOptions {
     status?: Status,
-    handleAgentChatMessage: ( params: HandleAgentChatMessageParams ) => void
 }
 
-export function openRoutes( options: OpenRouteOptions ) {
-    const {
-        status = {},
-        handleAgentChatMessage
-    } = options;
-
+export function openRoutes( { status = {} }: OpenRouteOptions ) {
     var router = express.Router();
 
     // simple status page, also used for server health
@@ -66,10 +60,10 @@ export function openRoutes( options: OpenRouteOptions ) {
 
         const agentSession = await resolveAgentSession( req, res );
         if( !agentSession )
-            // A 401 has been issued with a challenge...
+            // A 401 has been issued with a challenge, or an auth error has been thrown
             return;
 
-        const result = await handleAgentChatMessage({
+        const result = await agentHooks<ChatHooks>().handleAgentChatMessage({
             uid,
             envelope: req.body as ChatMessageEnvelope, 
             agentSession

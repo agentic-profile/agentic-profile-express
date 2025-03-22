@@ -31,19 +31,20 @@ app.use("/", express.static(
 ));
 
 const Storage = process.env.AP_STORAGE === 'mysql' ? MySQLStorage : InMemoryStorage;
+const port = process.env.PORT || 3003;
+const TESTING_DID_DOMAIN = `localhost%3A${port}:iam`;
 setAgentHooks({
     generateChatReply,
     storage: new Storage(),
-    createUserAgentDid: (uid) => `did:web:${process.env.AP_DID_DOMAIN ?? "localhost%3A3003:iam"}:${uid}`,
-    ensureCreditBalance
+    createUserAgentDid: (uid) => `did:web:${process.env.AP_DID_DOMAIN ?? TESTING_DID_DOMAIN}:${uid}`,
+    ensureCreditBalance,
+    handleAgentChatMessage
 });
 
 app.use("/", openRoutes({
-    status: { name: "Testing" },
-    handleAgentChatMessage
+    status: { name: "Testing Agentic Profile" }
 }));
 
-const port = process.env.PORT || 3003;
 app.listen(port, () => {
     console.info(`Agentic Profile Express listening on http://localhost:${port}`);
 });
