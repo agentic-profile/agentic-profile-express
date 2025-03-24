@@ -1,6 +1,6 @@
 # Agentic Profile Chat Using Node Express
 
-This is an example of a Node service that hosts Agentic Profile agents.
+This is an example of a Node service that supports Agentic Profile agent chats.
 
 This service can run locally, on a Node server, or on AWS Lambda.  It supports a simple in-memory database for local testing, and MySQL when running in the cloud.
 
@@ -28,21 +28,27 @@ The easiest way to run this demo is locally.
     $ yarn dev
 
 
-## Testing A General Agentic Profile With A Client Agent
+## Testing a Local Agentic Profile With Chat
 
-1. Make sure the local server is started at http://localhost:3003
+1. Create an .env file to enable NODE "developer" mode.  See example.env for more information.
+
+    NODE_ENV=developer
+
+2. Make sure the local server is started at http://localhost:3003
 
     $ yarn dev
 
-2. Create a demo agentic profile with public and private keys, and an account (uid=2) on the server
+3. Create a demo agentic profile with public and private keys, and an account (uid=2) on the server
 
-    $ node test/create-agentic-profile
+    $ node test/create-local-agentic-profile
 
-3. Use CURL to request a chat reply:
+    You can review the results in the local www/iam/7 directory...
+
+4. Use CURL to (try to) send a chat message:
 
     $ curl -X PUT http://localhost:3003/users/2/agent-chats
 
-4. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
+5. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
 
     {
         "type": "agentic-challenge/0.3",
@@ -54,10 +60,56 @@ The easiest way to run this demo is locally.
 
     NOTE: Copy the "id" and "random" from your server's response for the next step.  In the above example the id is "1" and the random is "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
 
-5. Use the agent authorization token (session key) to authenticate and generate a chat reply
+6. Use the agent authorization token (session key) to authenticate and generate a chat reply
 
-    $ node test/chat-reply &lt;id from step 4&gt; &lt;random from step 4&gt;
+    $ node test/local-chat-message &lt;id from step 5&gt; &lt;random from step 4&gt;
 
     For example:
 
-    node test/chat-reply 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+    node test/local-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+
+
+## Testing a Global Agentic Profile With Chat
+
+A global agentic profile is available from anywhere on the internet.  The "did:web" variant DID documents are
+available via HTTPS which is used in the example below.  We use the "test.agenticprofile.ai" domain for
+hosting temporary profiles for teating.
+
+
+1. Create an .env file to enable NODE "developer" mode.  See example.env for more information.
+
+    NODE_ENV=developer
+
+2. Make sure the local server is started at http://localhost:3003
+
+    $ yarn dev
+
+3. Create a demo agentic profile with public and private keys, and an account (uid=2) on the server
+
+    $ node test/create-global-agentic-profile
+
+    You can review the results in the local www/iam/7 directory...
+
+4. Use CURL to (try to) send a chat message:
+
+    $ curl -X PUT http://localhost:3003/users/2/agent-chats
+
+5. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
+
+    {
+        "type": "agentic-challenge/0.3",
+        "challenge": {
+            "id": 1,
+            "random": "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+        }
+    }
+
+    NOTE: Copy the "id" and "random" from your server's response for the next step.  In the above example the id is "1" and the random is "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+
+6. Use the agent authorization token (session key) to authenticate and generate a chat reply
+
+    $ node test/global-chat-message &lt;id from step 5&gt; &lt;random from step 4&gt;
+
+    For example:
+
+    node test/global-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"

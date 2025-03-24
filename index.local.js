@@ -12,13 +12,11 @@ import { setAgentHooks } from "@agentic-profile/common";
 import {
     app,
     ensureCreditBalance,
+    generateChatReply,
     InMemoryStorage,
     MySQLStorage,
     openRoutes
 } from './dist/index.js';
-import {
-    generateChatReply
-} from "./dist/chat/chat.js";
 
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -32,11 +30,11 @@ app.use("/", express.static(
 
 const Storage = process.env.AP_STORAGE === 'mysql' ? MySQLStorage : InMemoryStorage;
 const port = process.env.PORT || 3003;
-const TESTING_DID_DOMAIN = `localhost%3A${port}:iam`;
+const TESTING_DID_PATH = `localhost%3A${port}:iam`;
 setAgentHooks({
     generateChatReply,
     storage: new Storage(),
-    createUserAgentDid: (uid) => `did:web:${process.env.AP_DID_DOMAIN ?? TESTING_DID_DOMAIN}:${uid}`,
+    createUserAgentDid: (uid) => `did:${process.env.AP_DID_PATH ?? TESTING_DID_PATH}:${uid}`,
     ensureCreditBalance,
     handleAgentChatMessage
 });

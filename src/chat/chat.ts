@@ -35,7 +35,7 @@ export async function generateChatReply({ uid, agentDid, messages}: GenerateChat
     const userGoals = ''; // personas.filter(e=>e.meta?.goals).map(e=>e.meta.goals).join('\n\n');
     const instruction = buildInstruction( user, userGoals );
 
-    const provider = selectAIProvider( "vertex:" );
+    const provider = selectAIProvider( process.env.AP_AI_PROVIDER ?? "eliza:" );
     return await provider.completion({ agentDid, messages, instruction });
 
     /* e.g.

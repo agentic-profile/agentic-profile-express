@@ -37,16 +37,20 @@ export function openRoutes( { status = {} }: OpenRouteOptions ) {
         res.json({ name:"Agentic Profile Node Service", version:[1,0,0], ...status, started:runningSince, url:baseUrl(req) }); 
     });
 
-    // TODO remove - only for testing!
     router.get( "/storage", asyncHandler( async (req: Request, res: Response) => {
+        if( process.env.NODE_ENV !== 'development' )
+            throw new Error( "/storage only available when NODE_ENV=development" );
+
         const data = await agentHooks<CommonHooks>().storage.dump();
         res.status(200)
             .set('Content-Type', 'application/json')
             .send( JSON.stringify(data, null, 4) ); // make easier to read ;)
     }));
 
-    // TODO remove - only for testing!
     router.post( "/accounts", asyncHandler( async (req: Request, res: Response) => {
+        if( process.env.NODE_ENV !== 'development' )
+            throw new Error( "POST /accounts only available when NODE_ENV=development" );
+
         const { storage } = agentHooks<Storage>();
         const account = await storage.createAccount( req.body as NewAccountFields );
         res.json({ account });
