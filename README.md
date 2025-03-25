@@ -99,9 +99,9 @@ available via HTTPS which is used in the example below.  We use the "test.agenti
 hosting temporary profiles for teating.
 
 
-1. Create an .env file to enable NODE "developer" mode.  See example.env for more information.
+1. Create an .env file to support "admin" features.  See example.env for more information.
 
-    NODE_ENV=developer
+    ADMIN_TOKEN=yoursecret
 
 2. Make sure the local server is started at http://localhost:3003
 
@@ -140,11 +140,14 @@ hosting temporary profiles for teating.
 
 ## Testing a Global Agentic Profile with a Cloud Deployment of an Agentic Chat Service 
 
+NOTE: The following instructions assume you have created an agentic service at https://agents.smarterdating.ai  In the following instructions use your name server domain name.
+
+
 1. Create a demo agentic profile with public and private keys, and an account (uid=2) on the server
 
     $ node test/create-global-agentic-profile
 
-    You can review the results in the local www/iam/7 directory...
+    You can review the results in the ~/.agentic/iam/6 directory...
 
 4. Use CURL to (try to) send a chat message:
 
