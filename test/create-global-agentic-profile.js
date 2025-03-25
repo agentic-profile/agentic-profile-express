@@ -1,6 +1,6 @@
+import 'dotenv/config';
 import axios from "axios";
 import { webDidToUrl } from "@agentic-profile/common";
-
 import os from "os";
 import { join } from "path";
 
@@ -53,7 +53,12 @@ Or via DID at:
                 credit: 10
             }
         };
-        const { data: data2 } = await axios.post( `http://localhost:${port}/accounts`, params );
+        const config = {
+            headers: {
+                Authorization: `Bearer ${process.env.ADMIN_TOKEN}`
+            }
+        }
+        const { data: data2 } = await axios.post( `http://localhost:${port}/accounts`, params, config );
         console.log( "\nCreated local account uid=2 to act as peer in agentic chat", prettyJSON( data2 ));
     } catch (error) {
         logAxiosResult( error );

@@ -1,5 +1,6 @@
 console.log( "Creating Local Agentic Profile and Peer Account...")
 
+import 'dotenv/config';
 import axios from "axios";
 import { join } from "path";
 
@@ -42,7 +43,12 @@ Shhhh! Keyring for testing... ${prettyJSON([jwk])}
                 credit: 10
             }
         };
-        const { data } = await axios.post( `http://localhost:${port}/accounts`, params );
+        const config = {
+            headers: {
+                Authorization: `Bearer ${process.env.ADMIN_TOKEN}`
+            }
+        }
+        const { data } = await axios.post( `http://localhost:${port}/accounts`, params, config );
         console.log( "Created local account uid=2 to act as peer in agentic chat", prettyJSON( data ));
     } catch (error) {
         logAxiosResult( error );

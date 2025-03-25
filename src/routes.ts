@@ -81,13 +81,12 @@ export function openRoutes( { status = {} }: OpenRouteOptions ) {
 
 function isAdmin( req: Request ) {
     const admin_token = process.env.ADMIN_TOKEN;
-    console.log( "isAdmin", admin_token, req.query, req.headers );
 
     // auth token as a query parameter?
     if( req.query.auth === admin_token )
         return true;
 
-    // auth token as header?
+    // auth token as Authorization header?
     const [ bearer, token ] = req.headers?.authorization?.split(/\s+/) ?? [];
     return bearer?.toLowerCase() === 'bearer' && token === admin_token;
 }

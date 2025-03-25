@@ -51,7 +51,7 @@ The easiest way to run this demo is locally.
     http://localhost:3003/storage?auth=yoursecret
 
 
-## Testing a Local Agentic Profile With Chat
+## Testing a Local Agentic Profile With A Locally Running Agentic Chat Service
 
 1. Create an .env file to support "admin" features.  See example.env for more information.
 
@@ -92,7 +92,7 @@ The easiest way to run this demo is locally.
     node test/local-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
 
 
-## Testing a Global Agentic Profile With Chat
+## Testing a Global Agentic Profile With A Locally Running Agentic Chat Service
 
 A global agentic profile is available from anywhere on the internet.  The "did:web" variant DID documents are
 available via HTTPS which is used in the example below.  We use the "test.agenticprofile.ai" domain for
@@ -107,11 +107,11 @@ hosting temporary profiles for teating.
 
     $ yarn dev
 
-3. Create a demo agentic profile with public and private keys, and an account (uid=2) on the server
+3. Create a global demo agentic profile with public and private keys, and a local account (uid=2) on the server
 
     $ node test/create-global-agentic-profile
 
-    You can review the results in the local www/iam/7 directory...
+    You can review the results in your ~/.agentic/iam/6 directory...
 
 4. Use CURL to (try to) send a chat message:
 
@@ -138,8 +138,7 @@ hosting temporary profiles for teating.
     $ node test/global-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
 
 
-## Testing a Cloud Deployment of an Agentic Chat Service 
-
+## Testing a Global Agentic Profile with a Cloud Deployment of an Agentic Chat Service 
 
 1. Create a demo agentic profile with public and private keys, and an account (uid=2) on the server
 
@@ -165,8 +164,8 @@ hosting temporary profiles for teating.
 
 6. Use the agent authorization token (session key) to authenticate and generate a chat reply
 
-    $ node test/global-chat-message &lt;id from step 5&gt; &lt;random from step 4&gt;
+    $ node test/remote-chat-message &lt;id from step 5&gt; &lt;random from step 4&gt;
 
     For example:
 
-    $ node test/global-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+    $ node test/remote-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"

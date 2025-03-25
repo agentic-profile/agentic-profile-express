@@ -10,11 +10,11 @@ import {
 } from "@agentic-profile/common";
 
 import {
-    buildInstruction,
     ChatHooks,
     GenerateChatReplyParams,
     User
 } from "@agentic-profile/chat";
+import { buildInstruction } from "./instruction.js";
 
 
 export async function generateChatReply({ uid, agentDid, messages}: GenerateChatReplyParams ): Promise<ChatCompletionResult> {
