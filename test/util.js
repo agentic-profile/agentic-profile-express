@@ -3,10 +3,10 @@ import axios from "axios";
 import { signChallenge } from "@agentic-profile/auth";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { readFile } from "fs/promises";
+import { readFile, mkdir, writeFile } from "fs/promises";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export const __dirname = dirname(__filename);
 
 
 export function logAxiosResult( axiosResult ) {
@@ -58,7 +58,7 @@ export async function createAgenticProfile( serviceEndpoint ) {
 
 export async function sendChatMessage({
     argv,
-    iamId,          // 6
+    profileDir,
     peerAgentDid,   // `did:web:localhost%3A${port}:iam:2#agent-chat`
     peerAgentUrl    // `http://localhost:${port}/users/2/agent-chats`
 }) {
@@ -71,22 +71,16 @@ export async function sendChatMessage({
     const id = Number(argv[2].trim());
     const random = argv[3].trim();
 
-    const profilePath = join(__dirname, "..", "www", "iam", ''+iamId, "did.json");
-    let buffer = await readFile( profilePath );
-    const agenticProfile = JSON.parse( buffer );
-    console.log( "Using agentic profile: ", JSON.stringify( agenticProfile, null, 4 ) );
-
-    const keyringPath = join(__dirname, "..", "www", "iam", ''+iamId, "keyring.json");
-    buffer = await readFile( keyringPath );
-    const { privateJwk } = JSON.parse( buffer );
-    console.log( "Using private jwk: ", JSON.stringify( privateJwk, null, 4 ) );
+    //const profileDir = join(__dirname, "..", "www", "iam", ''+iamId );
+    const { profile, keyring } = await loadProfile( profileDir );
+    const { privateJwk } = keyring[0];
 
     // Authenticating with an agent of user 2 on localhost
     const agenticChallenge = {
         challenge: { id, random }
     };
 
-    const agentDid = `${agenticProfile.id}#agent-chat`;
+    const agentDid = `${profile.id}#agent-chat`;
     const attestation = {
         agentDid,
         verificationId: "#agent-chat-key-0" 
@@ -123,4 +117,34 @@ export async function sendChatMessage({
         logAxiosResult( error );
         console.error("ERROR: Failed to chat with reply");
     }   
+}
+
+export async function saveProfile({ dir, profile, keyring }) {
+    await mkdir(dir, { recursive: true });
+
+    const profilePath = join(dir, "did.json");
+    await writeFile(
+        profilePath,
+        prettyJSON( profile ),
+        "utf8"
+    );
+
+    const keyringPath = join(dir, "keyring.json");
+    await writeFile(
+        keyringPath,
+        prettyJSON( keyring ),
+        "utf8"
+    );  
+
+    return { profilePath, keyringPath }
+}
+
+export async function loadProfile( dir ) {
+    let buffer = await readFile( join( dir, "did.json") );
+    const profile = JSON.parse( buffer );
+
+    buffer = await readFile( join( dir, "keyring.json") );
+    const keyring = JSON.parse( buffer );
+
+    return { profile, keyring };
 }

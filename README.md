@@ -28,11 +28,34 @@ The easiest way to run this demo is locally.
     $ yarn dev
 
 
+## Enable Admin access (and other features)
+
+1. Copy the file example.env to .env
+
+    $ cp example.env .env
+
+2. Edit the .env file to enable admin features.  Uncomment ADMIN_TOKEN and choose a password, for example:
+
+    ADMIN_TOKEN=yoursecret
+
+3. Restart the server
+
+    $ yarn dev
+
+4. Make sure an admin feature works.  From the command line try:
+
+    $ curl -H "Authorization: Bearer yoursecret" http://localhost:3003/storage
+
+    Or from the browser:
+
+    http://localhost:3003/storage?auth=yoursecret
+
+
 ## Testing a Local Agentic Profile With Chat
 
-1. Create an .env file to enable NODE "developer" mode.  See example.env for more information.
+1. Create an .env file to support "admin" features.  See example.env for more information.
 
-    NODE_ENV=developer
+    ADMIN_TOKEN=yoursecret
 
 2. Make sure the local server is started at http://localhost:3003
 
@@ -42,7 +65,7 @@ The easiest way to run this demo is locally.
 
     $ node test/create-local-agentic-profile
 
-    You can review the results in the local www/iam/7 directory...
+    You can review the results in the local www/iam/6 directory...
 
 4. Use CURL to (try to) send a chat message:
 
@@ -112,4 +135,38 @@ hosting temporary profiles for teating.
 
     For example:
 
-    node test/global-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+    $ node test/global-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+
+
+## Testing a Cloud Deployment of an Agentic Chat Service 
+
+
+1. Create a demo agentic profile with public and private keys, and an account (uid=2) on the server
+
+    $ node test/create-global-agentic-profile
+
+    You can review the results in the local www/iam/7 directory...
+
+4. Use CURL to (try to) send a chat message:
+
+    $ curl -X PUT https://agents.smarterdating.ai/users/2/agent-chats
+
+5. Since you did not provide an Agentic authorization token, the server responded with a challenge similar to:
+
+    {
+        "type": "agentic-challenge/0.3",
+        "challenge": {
+            "id": 1,
+            "random": "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+        }
+    }
+
+    NOTE: Copy the "id" and "random" from your server's response for the next step.  In the above example the id is "1" and the random is "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+
+6. Use the agent authorization token (session key) to authenticate and generate a chat reply
+
+    $ node test/global-chat-message &lt;id from step 5&gt; &lt;random from step 4&gt;
+
+    For example:
+
+    $ node test/global-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"

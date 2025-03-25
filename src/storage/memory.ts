@@ -11,7 +11,7 @@ import {
 
 import {
     Account,
-    NewAccountFields,
+    CreateAccount,
     Storage,
     UserId
 } from "./models.js";
@@ -94,12 +94,10 @@ export class InMemoryStorage implements Storage {
     // Accounts
     //
 
-    async createAccount( fields: NewAccountFields ) {
+    async createAccount( { options, fields }: CreateAccount ) {
         let uid;
-        if( fields.uid ) {
-            uid = +fields.uid;
-            if( accounts.has( ''+uid ) )
-                throw new ServerError([4],"Account id is already in use: " + uid); 
+        if( options?.uid ) {
+            uid = +options.uid;
             if( uid >= nextUserId )
                 nextUserId = uid + 1;
         } else
@@ -108,7 +106,6 @@ export class InMemoryStorage implements Storage {
         const { name, credit = 2 } = fields;
         const account = { name, credit, uid, created: new Date() };
         accounts.set( ''+uid, account );
-        console.log( 'createAccount', account, accounts );
         return account;
     }
 

@@ -15,19 +15,27 @@ export interface User {
     created: Date
 }
 
-export interface NewAccountFields {
-    uid: UserId,
-    name: string,
-    credit?: number
-}
-
 export interface Account extends User {
     credit?: number
 }
 
+export interface CreateAccountOptions {
+    uid?: UserId
+}
+
+export interface CreateAccountFields {
+    name: string,
+    credit?: number
+}
+
+export interface CreateAccount {
+    options: CreateAccountOptions,
+    fields: CreateAccountFields
+}
+
 export interface Storage extends ClientAgentSessionStorage, ChatStorage {
     // Accounts
-    createAccount: ( account: NewAccountFields ) => Promise<Account>,
+    createAccount: ( account: CreateAccount ) => Promise<Account>,
     fetchAccountFields: ( uid: UserId, fields?: string ) => Promise<Account | undefined>,
 
     // Chat

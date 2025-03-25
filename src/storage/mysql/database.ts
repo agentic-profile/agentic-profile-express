@@ -11,7 +11,7 @@ import {
 
 import {
     Account,
-    NewAccountFields,
+    CreateAccount,
     Storage,
     UserId
 } from "../models.js";
@@ -21,7 +21,6 @@ import {
     queryRows,
     updateDB
 } from "./util.js";
-import { ServerError } from "../../util/net.js";
 
 
 const AGENT_CHAT_COLUMNS = "uid,user_agent_did as userAgentDid,peer_agent_did as peerAgentDid,created,updated,aimodel,cost,history";
@@ -48,15 +47,19 @@ export class MySQLStorage implements Storage {
     // Accounts
     //
 
-    async createAccount( fields: NewAccountFields ) {
-        const { uid, name, credit = 2 } = fields;
+    async createAccount( { options, fields }: CreateAccount ) {
+        const { name, credit = 2 } = fields;
         const account = { name, credit, created: new Date() } as Account;
 
+        const { uid } = options;
         if( uid ) {
-            const found = await queryFirstRow<Account>("SELECT name FROM users WHERE uid=?",[uid]);
-            if( found )
-                throw new ServerError([4],"Account id is already in use: " + uid);
             account.uid = uid;
+            const found = await queryFirstRow<Account>("SELECT name FROM users WHERE uid=?",[uid]);
+            if( found ) {
+                // OK to simply update
+                await queryResult("UPDATE users SET ? WHERE uid=?",[account,uid]);
+                return account;
+            }
         } 
 
         const { insertId } = await queryResult( "INSERT INTO users SET ?", [account] );

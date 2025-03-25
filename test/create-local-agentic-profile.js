@@ -1,19 +1,15 @@
 console.log( "Creating Local Agentic Profile and Peer Account...")
 
 import axios from "axios";
-
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 import {
+    __dirname,
     createAgenticProfile,
     logAxiosResult,
-    prettyJSON
+    prettyJSON,
+    saveProfile
 } from "./util.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 
 (async ()=>{
@@ -28,38 +24,25 @@ const __dirname = dirname(__filename);
 
     try {
         const dir = join(__dirname, "..", "www", "iam", ''+uid);
-        await mkdir(dir, { recursive: true });
-
-        const didPath = join(dir, "did.json");
-        await writeFile(
-            didPath,
-            prettyJSON(profile),
-            "utf8"
-        );
-
-        const keyringJSON = prettyJSON(jwk);
-        await writeFile(
-            join(dir, "keyring.json"),
-            keyringJSON,
-            "utf8"
-        );
+        const { profilePath } = await saveProfile({ dir, profile, keyring: [jwk] });
 
         console.log(`
-
-Agentic Profile saved to ${didPath}
+Agentic Profile saved to ${profilePath}
 
 With server running, view at http://localhost:${port}/iam/${uid}/did.json or via DID at ${did}
 
-Shhhh! Keyring for testing... ${keyringJSON}
+Shhhh! Keyring for testing... ${prettyJSON([jwk])}
 `);
 
         // create account # 2, which will be the person represented by agent/2
-        const newAccountFields = {
-            uid: 2,
-            name: "Eric Portman", // #2 in the Prisoner ;)
-            credit: 10
+        const params = {
+            options: { uid: 2 },    // force to uid=2
+            fields: {
+                name: "Eric Portman", // #2 in the Prisoner ;)
+                credit: 10
+            }
         };
-        const { data } = await axios.post( `http://localhost:${port}/accounts`, newAccountFields );
+        const { data } = await axios.post( `http://localhost:${port}/accounts`, params );
         console.log( "Created local account uid=2 to act as peer in agentic chat", prettyJSON( data ));
     } catch (error) {
         logAxiosResult( error );

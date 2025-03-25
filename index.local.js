@@ -30,7 +30,7 @@ app.use("/", express.static(
 
 const Storage = process.env.AP_STORAGE === 'mysql' ? MySQLStorage : InMemoryStorage;
 const port = process.env.PORT || 3003;
-const TESTING_DID_PATH = `localhost%3A${port}:iam`;
+const TESTING_DID_PATH = `web:localhost%3A${port}:iam`;
 setAgentHooks({
     generateChatReply,
     storage: new Storage(),
