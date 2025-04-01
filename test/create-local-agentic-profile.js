@@ -1,42 +1,48 @@
-console.log( "Creating Local Agentic Profile and Peer Account...")
-
 import 'dotenv/config';
-import axios from "axios";
 import { join } from "path";
-
 import {
-    __dirname,
-    createAgenticProfile,
-    logAxiosResult,
     prettyJSON,
+    webDidToUrl
+} from "@agentic-profile/common";
+import {
+    createAgenticProfile,
+    fetchJson,
     saveProfile
-} from "./util.js";
+} from "@agentic-profile/express-common";
+
+import { __dirname } from "./util.js";
 
 
 (async ()=>{
 
     const port = process.env.PORT || 3003;
-
     const uid = 6;
-    const { profile, jwk } = await createAgenticProfile( `http://localhost:${port}/users/${uid}/agent-chats` );
+    const services = [
+        {
+            type: "chat",
+            url: `http://localhost:${port}/users/${uid}/agent-chats`
+        }
+    ];
+    const { profile, keyring } = await createAgenticProfile({ services });
 
-    const did = `did:web:localhost%3A${port}:iam:${uid}`;
+    // simple localhost DID
+    const did = `did:web:localhost%3A${port}:iam:local-me`;
     profile.id = did;
 
     try {
-        const dir = join(__dirname, "..", "www", "iam", ''+uid);
-        const { profilePath } = await saveProfile({ dir, profile, keyring: [jwk] });
+        const dir = join( __dirname, "..", "www", "iam", "local-me" );
+        const { profilePath } = await saveProfile({ dir, profile, keyring });
 
         console.log(`
 Agentic Profile saved to ${profilePath}
 
-With server running, view at http://localhost:${port}/iam/${uid}/did.json or via DID at ${did}
+With server running, view at ${webDidToUrl(did)} or via DID at ${did}
 
-Shhhh! Keyring for testing... ${prettyJSON([jwk])}
+Shhhh! Keyring for testing... ${prettyJSON(keyring)}
 `);
 
-        // create account # 2, which will be the person represented by agent/2
-        const params = {
+        // create account # 2, which will be the person represented/billed by users/2/agent-chat
+        const payload = {
             options: { uid: 2 },    // force to uid=2
             fields: {
                 name: "Eric Portman", // #2 in the Prisoner ;)
@@ -45,12 +51,17 @@ Shhhh! Keyring for testing... ${prettyJSON([jwk])}
         };
         const config = {
             headers: {
-                Authorization: `Bearer ${process.env.ADMIN_TOKEN}`
-            }
+                Authorization: `Bearer ${process.env.ADMIN_TOKEN}`,
+            },
         }
-        const { data } = await axios.post( `http://localhost:${port}/accounts`, params, config );
+        const { data } = await fetchJson(
+            `http://localhost:${port}/accounts`,
+            payload,
+            config
+        );
+
         console.log( "Created local account uid=2 to act as peer in agentic chat", prettyJSON( data ));
     } catch (error) {
-        logAxiosResult( error );
+        console.error( "Failed to create profile: " + error );
     }
 })();

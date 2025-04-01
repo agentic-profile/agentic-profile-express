@@ -8,6 +8,7 @@ import {
     AgentChatKey,
     ChatMessageHistory
 } from "@agentic-profile/chat";
+import { ServerError } from "@agentic-profile/express-common";
 
 import {
     Account,
@@ -15,7 +16,7 @@ import {
     Storage,
     UserId
 } from "./models.js";
-import { ServerError } from "../util/net.js";
+
 
 let nextUserId = 1;
 const accounts = new Map<string,Account>();

@@ -8,9 +8,9 @@ import {
 //} from "./dist/chat/simple.js";
 } from "@agentic-profile/chat";
 import { setAgentHooks } from "@agentic-profile/common";
+import { app } from "@agentic-profile/express-common";
 
 import {
-    app,
     ensureCreditBalance,
     generateChatReply,
     InMemoryStorage,

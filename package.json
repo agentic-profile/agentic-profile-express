@@ -1,13 +1,13 @@
 {
   "name": "@agentic-profile/express",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Framework for a Node Express based service for AI Agents using the Agentic Profile protocols",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "tsup --external ./src/storage/handle",
+    "prepare": "tsup",
     "dev": "yarn build; node --inspect index.local.js",
-    "build": "tsup --external ./src/storage/handle",
+    "build": "tsup",
     "test": "jest"
   },
   "exports": {
@@ -16,8 +16,10 @@
   },
   "files": [
     "dist",
+    "example.env",
     "index.local.js",
-    "README.md"
+    "README.md",
+    "schema.sql"
   ],
   "type": "module",
   "repository": {
@@ -31,20 +33,11 @@
   },
   "homepage": "https://github.com/agentic-profile/agentic-profile-express#readme",
   "dependencies": {
-    "@agentic-profile/ai-provider": "^0.3.0",
-    "@agentic-profile/auth": "^0.3.1",
-    "@agentic-profile/chat": "^0.3.3",
-    "@agentic-profile/common": "^0.2.4",
+    "@agentic-profile/chat": "^0.4.0",
+    "@agentic-profile/express-common": "^0.4.3",
     "@google-cloud/vertexai": "^1.9.3",
-    "axios": "^1.7.9",
-    "basic-auth": "^2.0.1",
-    "compression": "^1.7.4",
-    "cors": "^2.8.5",
-    "did-resolver": "^4.1.0",
     "dotenv": "^16.4.7",
-    "express": "^4.21.1",
-    "morgan": "^1.10.0",
-    "mysql2": "^3.12.0"
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "@types/basic-auth": "^1.1.8",

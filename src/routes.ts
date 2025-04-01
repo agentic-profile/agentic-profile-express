@@ -10,12 +10,13 @@ import {
     agentHooks,
     CommonHooks
 } from "@agentic-profile/common";
-
 import {
     asyncHandler,
     baseUrl,
-} from "./util/net.js"
-import { resolveAgentSession } from "./agentic-auth.js";
+    isAdmin,
+    resolveAgentSession
+} from "@agentic-profile/express-common";
+
 import { CreateAccount } from "./storage/models.js";
 
 
@@ -58,7 +59,6 @@ export function openRoutes( { status = {} }: OpenRouteOptions ) {
 
     // For a third-party agent to post a message to the agent of the given uid
     // If no authorization is provided, or it is expired, then a challenge is issued
-    // and the /agent-login should be used to get a session key
     router.put( "/users/:uid/agent-chats", asyncHandler( async (req: Request, res: Response) => {
         const { uid } = req.params;
 
@@ -77,16 +77,4 @@ export function openRoutes( { status = {} }: OpenRouteOptions ) {
 
     console.log( "Open routes are ready" );
     return router;
-}
-
-function isAdmin( req: Request ) {
-    const admin_token = process.env.ADMIN_TOKEN;
-
-    // auth token as a query parameter?
-    if( req.query.auth === admin_token )
-        return true;
-
-    // auth token as Authorization header?
-    const [ bearer, token ] = req.headers?.authorization?.split(/\s+/) ?? [];
-    return bearer?.toLowerCase() === 'bearer' && token === admin_token;
 }

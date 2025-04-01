@@ -8,6 +8,13 @@ import {
     AgentChatKey,
     ChatMessageHistory
 } from "@agentic-profile/chat";
+import { mysql } from "@agentic-profile/express-common";
+const {
+    queryFirstRow,
+    queryResult,
+    queryRows,
+    updateDB
+} = mysql;
 
 import {
     Account,
@@ -15,12 +22,6 @@ import {
     Storage,
     UserId
 } from "../models.js";
-import {
-    queryFirstRow,
-    queryResult,
-    queryRows,
-    updateDB
-} from "./util.js";
 
 
 const AGENT_CHAT_COLUMNS = "uid,user_agent_did as userAgentDid,peer_agent_did as peerAgentDid,created,updated,aimodel,cost,history";

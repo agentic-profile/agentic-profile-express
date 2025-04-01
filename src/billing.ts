@@ -2,13 +2,14 @@ import {
     agentHooks,
     CommonHooks,
 } from "@agentic-profile/common";
+import { ServerError } from "@agentic-profile/express-common";
 
 import {
     Account,
     Storage,
     UserId
 } from "./storage/models.js";
-import { ServerError } from "./util/net.js";
+
 
 export async function ensureCreditBalance( uid: UserId, actor?: Account ) {
     if( actor && uid == actor.uid ) {

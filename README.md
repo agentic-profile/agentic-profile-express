@@ -65,7 +65,7 @@ The easiest way to run this demo is locally.
 
     $ node test/create-local-agentic-profile
 
-    You can review the results in the local www/iam/6 directory...
+    You can review the results in the local www/iam/local-me directory...
 
 4. Use CURL to (try to) send a chat message:
 
@@ -77,19 +77,19 @@ The easiest way to run this demo is locally.
         "type": "agentic-challenge/0.3",
         "challenge": {
             "id": 1,
-            "random": "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+            "secret": "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
         }
     }
 
-    NOTE: Copy the "id" and "random" from your server's response for the next step.  In the above example the id is "1" and the random is "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+    NOTE: Copy the "id" and "secret" from your server's response for the next step.  In the above example the id is "1" and the secret is "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
 
 6. Use the agent authorization token (session key) to authenticate and generate a chat reply
 
-    $ node test/local-chat-message &lt;id from step 5&gt; &lt;random from step 4&gt;
+    $ node test/local-chat-message -i 1 -s &lt;id from step 5&gt; &lt;random from step 4&gt;
 
     For example:
 
-    node test/local-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+    node test/local-chat-message -i 1 -s "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
 
 
 ## Testing a Global Agentic Profile With A Locally Running Agentic Chat Service
@@ -123,19 +123,19 @@ hosting temporary profiles for teating.
         "type": "agentic-challenge/0.3",
         "challenge": {
             "id": 1,
-            "random": "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+            "secret": "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
         }
     }
 
-    NOTE: Copy the "id" and "random" from your server's response for the next step.  In the above example the id is "1" and the random is "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+    NOTE: Copy the "id" and "secret" from your server's response for the next step.  In the above example the id is "1" and the secret is "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
 
 6. Use the agent authorization token (session key) to authenticate and generate a chat reply
 
-    $ node test/global-chat-message &lt;id from step 5&gt; &lt;random from step 4&gt;
+    $ node test/global-chat-message -i &lt;id from step 5&gt; -s &lt;random from step 4&gt;
 
     For example:
 
-    $ node test/global-chat-message 1 "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
+    $ node test/global-chat-message -i 1 -s "sA3xFXBp-9v8I0syAhcWcglgoRrTmj2UAiRmFpzpzbw"
 
 
 ## Testing a Global Agentic Profile with a Cloud Deployment of an Agentic Chat Service 
