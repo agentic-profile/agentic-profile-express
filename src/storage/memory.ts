@@ -1,4 +1,7 @@
-import { ChatMessage } from "@agentic-profile/common";
+import {
+    ChatMessage,
+    UserID
+} from "@agentic-profile/common";
 import {
     ClientAgentSession,
     ClientAgentSessionUpdates,
@@ -13,8 +16,7 @@ import { ServerError } from "@agentic-profile/express-common";
 import {
     Account,
     CreateAccount,
-    Storage,
-    UserId
+    Storage
 } from "./models.js";
 
 
@@ -110,7 +112,7 @@ export class InMemoryStorage implements Storage {
         return account;
     }
 
-    async fetchAccountFields( uid: UserId, fields?: string ) {
+    async fetchAccountFields( uid: UserID, fields?: string ) {
         return accounts.get( ''+uid );
     }
 

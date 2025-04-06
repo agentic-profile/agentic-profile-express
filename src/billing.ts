@@ -1,17 +1,17 @@
 import {
     agentHooks,
     CommonHooks,
+    UserID
 } from "@agentic-profile/common";
 import { ServerError } from "@agentic-profile/express-common";
 
 import {
     Account,
-    Storage,
-    UserId
+    Storage
 } from "./storage/models.js";
 
 
-export async function ensureCreditBalance( uid: UserId, actor?: Account ) {
+export async function ensureCreditBalance( uid: UserID, actor?: Account ) {
     if( actor && uid == actor.uid ) {
         if( !actor.credit || actor.credit <= 0 )
             throw new ServerError([4],"You are out of credits");

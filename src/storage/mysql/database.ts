@@ -2,7 +2,10 @@ import {
     ClientAgentSession,
     ClientAgentSessionUpdates
 } from "@agentic-profile/auth";
-import { ChatMessage } from "@agentic-profile/common";
+import {
+    ChatMessage,
+    UserID
+} from "@agentic-profile/common";
 import {
     AgentChat,
     AgentChatKey,
@@ -19,8 +22,7 @@ const {
 import {
     Account,
     CreateAccount,
-    Storage,
-    UserId
+    Storage
 } from "../models.js";
 
 
@@ -138,7 +140,7 @@ export class MySQLStorage implements Storage {
     // Account
     //
 
-    async fetchAccountFields( uid: UserId, fields?: string ) {
+    async fetchAccountFields( uid: UserID, fields?: string ) {
         const sql = `SELECT ${fields ?? "*"} FROM users WHERE uid=?`;
         return await queryFirstRow<Account>( sql, [uid] ) ?? undefined;
     }

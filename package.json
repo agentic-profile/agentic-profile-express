@@ -1,6 +1,6 @@
 {
   "name": "@agentic-profile/express",
-  "version": "0.4.0",
+  "version": "0.4.5",
   "description": "Framework for a Node Express based service for AI Agents using the Agentic Profile protocols",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,20 +33,21 @@
   },
   "homepage": "https://github.com/agentic-profile/agentic-profile-express#readme",
   "dependencies": {
-    "@agentic-profile/chat": "^0.4.0",
-    "@agentic-profile/express-common": "^0.4.3",
+    "@agentic-profile/chat": "^0.4.5",
+    "@agentic-profile/express-common": "^0.4.5",
     "@google-cloud/vertexai": "^1.9.3",
     "dotenv": "^16.4.7",
-    "express": "^5.1.0"
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "@types/basic-auth": "^1.1.8",
     "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.1",
     "@types/morgan": "^1.9.9",
-    "@types/node": "^22.9.2",
+    "@types/node": "^22.14.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.2"
-  }
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "yarn@4.8.1"
 }

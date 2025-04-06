@@ -9,5 +9,10 @@ export default defineConfig({
     clean: true,
     outDir: "dist",
     target: "esnext",
-    external: ["express","path","body-parser","depd"]
+    external: [
+        "express","path","body-parser","depd",
+        "@agentic-profile/auth",
+        "@agentic-profile/common",
+        "@agentic-profile/ai-provider"
+    ]
 });

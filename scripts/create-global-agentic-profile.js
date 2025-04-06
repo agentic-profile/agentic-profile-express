@@ -2,13 +2,15 @@ import 'dotenv/config';
 import os from "os";
 import { join } from "path";
 import {
-    prettyJSON,
+    createAgenticProfile,
+    prettyJson,
     webDidToUrl
 } from "@agentic-profile/common";
 import {
-    createAgenticProfile,
-    fetchJson,
-    resolvePublicKey,
+    createEdDsaJwk,
+    postJson
+} from "@agentic-profile/auth";
+import {
     saveProfile
 } from "@agentic-profile/express-common";
 
@@ -18,16 +20,15 @@ import {
     const port = process.env.PORT || 3003;
     const services = [
         {
-            type: "chat",
+            subtype: "chat",
             url: `https://agents.matchwise.ai/users/*/agent-chats`
         }
     ];
-    const { profile, keyring } = await createAgenticProfile({ services });
-    const b64uPublicKey = resolvePublicKey( profile );
+    const { profile, keyring, b64uPublicKey } = await createAgenticProfile({ services, createJwk: createEdDsaJwk });
 
     try {
     	// publish profile to web (so did:web:... will resolve)
-        let { data } = await fetchJson(
+        let { data } = await postJson(
             "https://testing.agenticprofile.ai/agentic-profile",
             { profile, b64uPublicKey }
         );
@@ -48,7 +49,7 @@ Or via DID at:
 
         console.log(`Saved agentic profile to ${dir}
 
-Shhhh! Keyring for testing... ${prettyJSON( keyring )}`);
+Shhhh! Keyring for testing... ${prettyJson( keyring )}`);
 
         // create account # 2, which will be the account represented/billed for user/2/agent-chats
         const payload = {
@@ -63,13 +64,13 @@ Shhhh! Keyring for testing... ${prettyJSON( keyring )}`);
                 Authorization: `Bearer ${process.env.ADMIN_TOKEN}`,
             },
         };
-        ({ data } = await fetchJson(
+        ({ data } = await postJson(
             `http://localhost:${port}/accounts`,
             payload,
             config
         ));
 
-        console.log( "Created local account uid=2 to act as peer in agentic chat", prettyJSON( data ));
+        console.log( "Created local account uid=2 to act as peer in agentic chat", prettyJson( data ));
     } catch (error) {
         console.error( "Failed to create global profile", error );
     }
