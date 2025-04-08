@@ -67,7 +67,7 @@ CREATE TABLE client_agent_sessions(
 CREATE TABLE agentic_profile_cache(
     profile_did VARCHAR(255) NOT NULL,
     agentic_profile JSON NOT NULL,      -- cached profile
-    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE(profile_did)
 );
 

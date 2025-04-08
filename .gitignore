@@ -2,6 +2,7 @@ function.zip
 .DS_Store
 www/iam/*
 google-keys.json
+keyring.json
 
 # Logs
 logs

@@ -1,0 +1,40 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://w3id.org/security/suites/jws-2020/v1",
+        "https://iamagentic.org/ns/agentic-profile/v1"
+    ],
+    "id": "did:web:undefined",
+    "verificationMethod": [
+        {
+            "id": "#identity-key",
+            "type": "JsonWebKey2020",
+            "publicKeyJwk": {
+                "kty": "OKP",
+                "alg": "EdDSA",
+                "crv": "Ed25519",
+                "x": "6EVHWPcPSJgxkTnjLWYLtjhHjIFWohzHnp9yelwJq6A"
+            }
+        }
+    ],
+    "service": [
+        {
+            "name": "presence agent",
+            "id": "#agent-presence",
+            "type": "Agentic/presence",
+            "serviceEndpoint": "https://undefined/presence",
+            "capabilityInvocation": [
+                {
+                    "id": "#agent-presence-key-0",
+                    "type": "JsonWebKey2020",
+                    "publicKeyJwk": {
+                        "kty": "OKP",
+                        "alg": "EdDSA",
+                        "crv": "Ed25519",
+                        "x": "ZESf0Wm6aAyYWFgttPywpDmlLhzTo7BNZXxq54ht0EE"
+                    }
+                }
+            ]
+        }
+    ]
+}

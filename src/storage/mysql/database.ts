@@ -6,7 +6,9 @@ import {
     RemoteAgentSessionUpdate
 } from "@agentic-profile/auth";
 import {
+    AgenticProfile,
     ChatMessage,
+    DID,
     UserID
 } from "@agentic-profile/common";
 import {
@@ -225,7 +227,7 @@ export class MySQLStorage implements Storage {
 
     async cacheAgenticProfile( profile: AgenticProfile ) {
         const update = {
-            agentic_profile: JSON.stringify(agenticProfile)
+            agentic_profile: JSON.stringify(profile)
         };
         const insert = {
             ...update,
@@ -241,7 +243,7 @@ export class MySQLStorage implements Storage {
         const AGENTIC_PROFILE_CACHE_COLUMNS = "profile_did as profileDid,agentic_profile as agenticProfile,updated";
         const cached = await queryFirstRow<AgenticProfileCache>(
             `SELECT ${AGENTIC_PROFILE_CACHE_COLUMNS} FROM agentic_profile_cache WHERE profile_did=?`,
-            [profileDid]
+            [did]
         );
         if( cached && !isExpired( cached ) )
             return cached.agenticProfile;
@@ -270,10 +272,10 @@ export class MySQLStorage implements Storage {
 }
 
 function isExpired( cached: AgenticProfileCache ) {
-    const created = new Date( cached.created );
+    const updated = new Date( cached.updated );
     const now = new Date();
     const ttl = cached.agenticProfile.ttl ?? 86400;
-    const result = created.getTime() + (ttl * 1000) < now.getTime();
-    console.log( 'isExpired', created, ttl, now, result );
+    const result = updated.getTime() + (ttl * 1000) < now.getTime();
+    console.log( 'isExpired', updated, ttl, now, result );
     return result;
 }
