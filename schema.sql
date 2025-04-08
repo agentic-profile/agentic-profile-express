@@ -65,8 +65,8 @@ CREATE TABLE client_agent_sessions(
 );
 
 CREATE TABLE agentic_profile_cache(
-    profile_did VARCHAR(255) NOT NULL, -- Might NOT be canonical
-    agentic_profile JSON NOT NULL, -- cached profile
+    profile_did VARCHAR(255) NOT NULL,
+    agentic_profile JSON NOT NULL,      -- cached profile
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(profile_did)
 );
@@ -75,9 +75,9 @@ CREATE TABLE agentic_profile_cache(
 CREATE TABLE remote_agent_sessions(
     uid INT NOT NULL,
     user_agent_did VARCHAR(255) NOT NULL,   -- my user agent, matches uid
-    peer_agent_did VARCHAR(255) NOT NULL,   -- server agent we are communicating with
-    peer_service_url TINYTEXT NOT NULL,
+    peer_agent_did VARCHAR(255),            -- OPTIONAL server agent we are communicating with
+    peer_service_url VARCHAR(255),          -- OPTIONAL service endpoint
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     auth_token TEXT NOT NULL,
-    UNIQUE(uid,user_agent_did,peer_agent_did)
+    UNIQUE(uid,user_agent_did,peer_agent_did,peer_service_url)
 );

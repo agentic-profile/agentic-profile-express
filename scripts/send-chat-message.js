@@ -53,21 +53,6 @@ const ARGV_OPTIONS = {
             }
         });
         console.log( "Sent chat message, reply is: ", prettyJson( data ));
-
-
-        /* Send the chat message to the agent
-        try {
-            const response = await sendAgenticPayload({
-                agentDid,
-                challenge: { id, secret },
-                keyring,
-                method: "PUT",
-                payload,
-                profile,
-                url: peerAgentUrl ?? `http://localhost:${port}/users/2/agent-chats`
-            });
-            console.log( "Sent chat message, reply is: ", prettyJSON( response ));
-        */
     } catch(err) {
         console.log( "Failed to send chat message", err );
     }

@@ -1,6 +1,9 @@
 import {
     ClientAgentSession,
-    ClientAgentSessionUpdates
+    ClientAgentSessionUpdates,
+    RemoteAgentSession,
+    RemoteAgentSessionKey,
+    RemoteAgentSessionUpdate
 } from "@agentic-profile/auth";
 import {
     ChatMessage,
@@ -25,6 +28,12 @@ import {
     Storage
 } from "../models.js";
 
+
+interface AgenticProfileCache {
+    profileDid: string,
+    agenticProfile: AgenticProfile,
+    updated: Date
+}
 
 const AGENT_CHAT_COLUMNS = "uid,user_agent_did as userAgentDid,peer_agent_did as peerAgentDid,created,updated,aimodel,cost,history";
 
@@ -175,19 +184,96 @@ export class MySQLStorage implements Storage {
     }
 
     //
+    // Remote agent sessions - I am client connecting to remote/agent
+    //
+
+    async fetchRemoteAgentSession( key: RemoteAgentSessionKey ) {
+        const COLUMNS = "uid,user_agent_did as userAgentDid,peer_agent_did as peerAgentDid,peer_service_url as peerServiceUrl,created,auth_token as authToken";
+        return await queryFirstRow<RemoteAgentSession>(
+            `SELECT ${COLUMNS} FROM remote_agent_sessions WHERE uid=? AND user_agent_did=? AND peer_agent_did=? AND peer_service_url=?`,
+            [ key.uid, key.userAgentDid, key.peerAgentDid, key.peerServiceUrl ]
+        ) ?? undefined;
+    }
+
+    async updateRemoteAgentSession( key: RemoteAgentSessionKey, update: RemoteAgentSessionUpdate ) {
+        const updateFields = {
+            created: new Date(),
+            auth_token: update.authToken
+        };
+        const insert = {
+            ...updateFields,
+            uid: key.uid,
+            user_agent_did: key.userAgentDid,
+            peer_agent_did: key.peerAgentDid ?? null,
+            peer_service_url: key.peerServiceUrl ?? null
+        }
+        await queryResult(
+            "INSERT INTO remote_agent_sessions SET ? ON DUPLICATE KEY ?",
+            [insert,updateFields]
+        );
+    }
+
+    async deleteRemoteAgentSession( key: RemoteAgentSessionKey ) {
+        await queryResult( "DELETE FROM remote_agent_sessions WHERE uid=? AND user_agent_did=? AND peer_agent_did=? AND peer_service_url=?",
+            [ key.uid, key.userAgentDid, key.peerAgentDid, key.peerServiceUrl ]
+        );
+    }
+
+    //
+    // Agentic Profile Cache
+    //
+
+    async cacheAgenticProfile( profile: AgenticProfile ) {
+        const update = {
+            agentic_profile: JSON.stringify(agenticProfile)
+        };
+        const insert = {
+            ...update,
+            profile_did: profile.id,
+        };
+        await mysql.queryResult(
+            "INSERT INTO agentic_profile_cache SET ? ON DUPLICATE KEY UPDATE ?",
+            [insert,update]
+        );
+    }
+
+    async getCachedAgenticProfile( did: DID ) {
+        const AGENTIC_PROFILE_CACHE_COLUMNS = "profile_did as profileDid,agentic_profile as agenticProfile,updated";
+        const cached = await queryFirstRow<AgenticProfileCache>(
+            `SELECT ${AGENTIC_PROFILE_CACHE_COLUMNS} FROM agentic_profile_cache WHERE profile_did=?`,
+            [profileDid]
+        );
+        if( cached && !isExpired( cached ) )
+            return cached.agenticProfile;
+        else
+            return undefined;
+    }
+
+    //
     // Debug
     //
 
     async dump() {
         const accounts = await queryRows<Account>( "SELECT uid,created,updated,name,roles,media,social,credit FROM users" );
         const clientSessions = await queryRows<any>( "SELECT * FROM client_agent_sessions" );
+        const remoteSessions = await queryRows<any>( "SELECT * FROM remote_agent_sessions" );
         const agentChats = await queryRows<AgentChat>( "SELECT * FROM agent_chats" );
 
         return {
             database: "MySQL",
             accounts,
             clientSessions,
+            remoteSessions,
             agentChats
         }
     }
+}
+
+function isExpired( cached: AgenticProfileCache ) {
+    const created = new Date( cached.created );
+    const now = new Date();
+    const ttl = cached.agenticProfile.ttl ?? 86400;
+    const result = created.getTime() + (ttl * 1000) < now.getTime();
+    console.log( 'isExpired', created, ttl, now, result );
+    return result;
 }

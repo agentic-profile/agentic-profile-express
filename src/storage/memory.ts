@@ -1,10 +1,15 @@
 import {
+    AgenticProfile,
     ChatMessage,
+    DID,
     UserID
 } from "@agentic-profile/common";
 import {
     ClientAgentSession,
     ClientAgentSessionUpdates,
+    RemoteAgentSession,
+    RemoteAgentSessionKey,
+    RemoteAgentSessionUpdate
 } from "@agentic-profile/auth";
 import {
     AgentChat,
@@ -27,6 +32,9 @@ let nextSessionId = 1;
 const clientSessions = new Map<number,ClientAgentSession>();
 
 const agentChats = new Map<string,AgentChat>();
+const remoteSessions = new Map<string,RemoteAgentSession>();
+
+const profileCache = new Map<string,AgenticProfile>();
 
 function resolveKey( key: AgentChatKey ) {
     return `${key.uid};${key.userAgentDid};${key.peerAgentDid}`;
@@ -43,7 +51,9 @@ export class InMemoryStorage implements Storage {
             database: 'memory',
             accounts: mapToObject( accounts ),
             clientSessions: mapToObject( clientSessions ),
-            agentChats: mapToObject( agentChats )
+            remoteSessions: mapToObject( remoteSessions ),
+            agentChats: mapToObject( agentChats ),
+            profileCache: mapToObject( profileCache )
         }
     }
 
@@ -134,7 +144,8 @@ export class InMemoryStorage implements Storage {
     }
 
     //
-    // Sessions
+    // Client sessions - agents are contacting me as a service.  I give them
+    // challenges and then accept their authTokens
     //
 
     async createClientAgentSession( challenge: string ) {
@@ -154,4 +165,39 @@ export class InMemoryStorage implements Storage {
         else
             clientSessions.set( id, { ...session, ...updates } );
     }
+
+    //
+    // Remote agent sessions - I am client connecting to remote/agent
+    //
+
+    async fetchRemoteAgentSession( key: RemoteAgentSessionKey ) {
+        return remoteSessions.get( resolveRemoteKey( key ) );
+    }
+
+    async updateRemoteAgentSession( key: RemoteAgentSessionKey, update: RemoteAgentSessionUpdate ) {
+        remoteSessions.set(
+            resolveRemoteKey( key ),
+            { ...key, ...update, created: new Date() }
+        );
+    }
+
+    async deleteRemoteAgentSession( key: RemoteAgentSessionKey ) {
+        remoteSessions.delete( resolveRemoteKey( key ) );
+    }
+
+    //
+    // Agentic Profile Cache
+    //
+
+    async cacheAgenticProfile( profile: AgenticProfile ) { 
+        profileCache.set( profile.id, profile )
+    }
+
+    async getCachedAgenticProfile( did: DID ) {
+        return profileCache.get( did )
+    }
+}
+
+function resolveRemoteKey( key: RemoteAgentSessionKey ) {
+    return `${key.uid} ${key.userAgentDid} ${key.peerAgentDid} ${key.peerServiceUrl}`;
 }

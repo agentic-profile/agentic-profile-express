@@ -15,15 +15,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@agentic-profile/auth@npm:^0.4.4, @agentic-profile/auth@npm:^0.4.5":
-  version: 0.4.5
-  resolution: "@agentic-profile/auth@npm:0.4.5"
+"@agentic-profile/auth@portal:/Users/mike/projects/iamagentic/agentic-profile-auth::locator=%40agentic-profile%2Fexpress%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@agentic-profile/auth@portal:/Users/mike/projects/iamagentic/agentic-profile-auth::locator=%40agentic-profile%2Fexpress%40workspace%3A."
   dependencies:
     "@agentic-profile/common": "npm:^0.4.5"
     "@noble/ed25519": "npm:^2.2.3"
-  checksum: 10c0/ed4677b2a9f31ea0d8c8db516f72ff190b73437bc3057ad4ec109661382870213f3916d68dd2f4d1dcdc7721d1cf8e11baf7c49082ab858cd98e30f5cf94dac0
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@agentic-profile/chat@npm:^0.4.5":
   version: 0.4.5
@@ -37,18 +36,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@agentic-profile/common@npm:^0.4.4, @agentic-profile/common@npm:^0.4.5":
-  version: 0.4.5
-  resolution: "@agentic-profile/common@npm:0.4.5"
+"@agentic-profile/common@portal:/Users/mike/projects/iamagentic/agentic-profile-common::locator=%40agentic-profile%2Fexpress%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@agentic-profile/common@portal:/Users/mike/projects/iamagentic/agentic-profile-common::locator=%40agentic-profile%2Fexpress%40workspace%3A."
   dependencies:
     did-resolver: "npm:^4.1.0"
-  checksum: 10c0/0c77bc1f5f9b47c270ff1de02392142e25cdd880d1c80880f05982c81fefbe4045e077ad6bf176c9914819050f81029cb68863a83884d2c9d68cac589352b0de
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@agentic-profile/express-common@npm:^0.4.5":
-  version: 0.4.5
-  resolution: "@agentic-profile/express-common@npm:0.4.5"
+"@agentic-profile/express-common@portal:/Users/mike/projects/iamagentic/agentic-profile-express-common::locator=%40agentic-profile%2Fexpress%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@agentic-profile/express-common@portal:/Users/mike/projects/iamagentic/agentic-profile-express-common::locator=%40agentic-profile%2Fexpress%40workspace%3A."
   dependencies:
     "@agentic-profile/auth": "npm:^0.4.4"
     "@agentic-profile/common": "npm:^0.4.4"
@@ -56,9 +54,8 @@ __metadata:
     express: "npm:^4.21.1"
     morgan: "npm:^1.10.0"
     mysql2: "npm:^3.14.0"
-  checksum: 10c0/bd91149112b13ed85047372e992f770865f17e413b526e33bf84b28cc7406e9246de3d24aa9087c64550c8e429d521bd354f8367413a0e9eacebd71610a1096e
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@agentic-profile/express@workspace:.":
   version: 0.0.0-use.local
