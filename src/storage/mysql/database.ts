@@ -1,3 +1,4 @@
+import log from "loglevel";
 import {
     ClientAgentSession,
     ClientAgentSessionUpdates,
@@ -79,7 +80,7 @@ export class MySQLStorage implements Storage {
         const { insertId } = await queryResult( "INSERT INTO users SET ?", [account] );
         account.uid = insertId;
 
-        console.log( 'createAccount', account );
+        log.info( 'createAccount', account );
         return account;  
     }
 
@@ -121,7 +122,6 @@ export class MySQLStorage implements Storage {
             messages = [];
 
         const existingChat = await this.fetchAgentChat( key );
-
         if( existingChat )
             return existingChat;
 
@@ -131,7 +131,16 @@ export class MySQLStorage implements Storage {
             peer_agent_did: key.peerAgentDid,
             history: JSON.stringify({messages})
         };
-        await queryResult( "INSERT INTO agent_chats SET ?", [insert] );
+        const result = await queryResult( "INSERT IGNORE INTO agent_chats SET ?", [insert] );
+        log.debug( "ensureAgentChat result", result );
+        if( result.affectedRows === 0 ) {
+            log.warn( 'ensureAgentChat failed to insert new chat - duplicate key', key );
+            const chat = await this.fetchAgentChat( key ); // try again...
+            if( !chat )
+                throw new Error(`Failed to ensure agent chat ${key}` );
+            else 
+                return chat;
+        }
         return {
             ...key,
             created: new Date(),
@@ -142,8 +151,9 @@ export class MySQLStorage implements Storage {
     async fetchAgentChat( key: AgentChatKey ) {
         const sql = `SELECT ${AGENT_CHAT_COLUMNS} FROM agent_chats WHERE ${MATCHES_AGENT_CHAT}`;
         const params = matchesChatParams(key);
-        console.log( 'fetchAgentChat', sql, params );
-        return await queryFirstRow<AgentChat>( sql, params ) ?? undefined;  
+        const chat = await queryFirstRow<AgentChat>( sql, params ) ?? undefined;  
+        log.debug( 'fetchAgentChat', sql, params, chat );
+        return chat;
     }
 
 
@@ -190,10 +200,13 @@ export class MySQLStorage implements Storage {
     //
 
     async fetchRemoteAgentSession( key: RemoteAgentSessionKey ) {
-        const COLUMNS = "uid,user_agent_did as userAgentDid,peer_agent_did as peerAgentDid,peer_service_url as peerServiceUrl,created,auth_token as authToken";
+        const COLUMNS = `uid,user_agent_did as userAgentDid,
+ NULLIF(peer_agent_did, '') as peerAgentDid,
+ NULLIF(peer_service_url, '') as peerServiceUrl,
+ created,auth_token as authToken`;
         return await queryFirstRow<RemoteAgentSession>(
             `SELECT ${COLUMNS} FROM remote_agent_sessions WHERE uid=? AND user_agent_did=? AND peer_agent_did=? AND peer_service_url=?`,
-            [ key.uid, key.userAgentDid, key.peerAgentDid, key.peerServiceUrl ]
+            [ key.uid, key.userAgentDid, key.peerAgentDid ?? "", key.peerServiceUrl ?? ""]
         ) ?? undefined;
     }
 
@@ -206,18 +219,18 @@ export class MySQLStorage implements Storage {
             ...updateFields,
             uid: key.uid,
             user_agent_did: key.userAgentDid,
-            peer_agent_did: key.peerAgentDid ?? null,
-            peer_service_url: key.peerServiceUrl ?? null
+            peer_agent_did: key.peerAgentDid ?? "",
+            peer_service_url: key.peerServiceUrl ?? ""
         }
         await queryResult(
-            "INSERT INTO remote_agent_sessions SET ? ON DUPLICATE KEY ?",
+            "INSERT INTO remote_agent_sessions SET ? ON DUPLICATE KEY UPDATE ?",
             [insert,updateFields]
         );
     }
 
     async deleteRemoteAgentSession( key: RemoteAgentSessionKey ) {
         await queryResult( "DELETE FROM remote_agent_sessions WHERE uid=? AND user_agent_did=? AND peer_agent_did=? AND peer_service_url=?",
-            [ key.uid, key.userAgentDid, key.peerAgentDid, key.peerServiceUrl ]
+            [ key.uid, key.userAgentDid, key.peerAgentDid ?? "", key.peerServiceUrl ?? ""]
         );
     }
 
@@ -276,6 +289,5 @@ function isExpired( cached: AgenticProfileCache ) {
     const now = new Date();
     const ttl = cached.agenticProfile.ttl ?? 86400;
     const result = updated.getTime() + (ttl * 1000) < now.getTime();
-    console.log( 'isExpired', updated, ttl, now, result );
     return result;
 }

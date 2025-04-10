@@ -8,7 +8,8 @@ import {
 } from "@agentic-profile/chat";
 import {
     agentHooks,
-    CommonHooks
+    CommonHooks,
+    prettyJson
 } from "@agentic-profile/common";
 import {
     asyncHandler,
@@ -45,7 +46,7 @@ export function openRoutes( { status = {} }: OpenRouteOptions ) {
         const data = await agentHooks<CommonHooks>().storage.dump();
         res.status(200)
             .set('Content-Type', 'application/json')
-            .send( JSON.stringify(data, null, 4) ); // make easier to read ;)
+            .send( prettyJson(data) ); // make easier to read ;)
     }));
 
     router.post( "/accounts", asyncHandler( async (req: Request, res: Response) => {
