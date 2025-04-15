@@ -114,7 +114,8 @@ export class MySQLStorage implements Storage {
 
     async insertChatMessage( key: AgentChatKey, message: ChatMessage ) {
         const messageJSON = JSON.stringify(message);
-        await queryResult( INSERT_MESSAGE, [ messageJSON, ...matchesChatParams(key) ] );
+        const { affectedRows } = await queryResult( INSERT_MESSAGE, [ messageJSON, ...matchesChatParams(key) ] );
+        return affectedRows > 0;
     }
 
     async recordChatCost( key: AgentChatKey, cost: number | undefined ) {
