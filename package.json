@@ -1,6 +1,6 @@
 {
   "name": "@agentic-profile/express",
-  "version": "0.4.8",
+  "version": "0.4.10",
   "description": "Framework for a Node Express based service for AI Agents using the Agentic Profile protocols",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,8 +33,8 @@
   },
   "homepage": "https://github.com/agentic-profile/agentic-profile-express#readme",
   "dependencies": {
-    "@agentic-profile/chat": "^0.4.8",
-    "@agentic-profile/express-common": "^0.4.8",
+    "@agentic-profile/chat": "^0.4.10",
+    "@agentic-profile/express-common": "^0.4.10",
     "@google-cloud/vertexai": "^1.9.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2"

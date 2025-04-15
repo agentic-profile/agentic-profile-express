@@ -9,6 +9,7 @@ import {
 import {
     AgenticProfile,
     ChatMessage,
+    ChatResolution,
     DID,
     UserID
 } from "@agentic-profile/common";
@@ -92,6 +93,22 @@ export class MySQLStorage implements Storage {
         await queryResult(
             `UPDATE agent_chats SET history=? WHERE ${MATCHES_AGENT_CHAT}`,
             [ JSON.stringify(history), ...matchesChatParams(key) ]
+        )
+    }
+
+    async updateChatResolution( key: AgentChatKey, userResolution: ChatResolution | null | undefined, peerResolution: ChatResolution | null | undefined ) {
+        if( userResolution === undefined && peerResolution === undefined )
+            return; // nothing to do
+
+        const update = {} as any;
+        if( userResolution !== undefined )
+            update.user_resolution = userResolution ? JSON.stringify( userResolution ) : null;
+        if( peerResolution !== undefined )
+            update.peer_resolution = peerResolution ? JSON.stringify( peerResolution ) : null;
+
+        await queryResult(
+            `UPDATE agent_chats SET ? WHERE ${MATCHES_AGENT_CHAT}`,
+            [ update, ...matchesChatParams(key) ]
         )
     }
 

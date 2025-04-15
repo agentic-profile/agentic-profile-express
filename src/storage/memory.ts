@@ -1,6 +1,7 @@
 import {
     AgenticProfile,
     ChatMessage,
+    ChatResolution,
     DID,
     UserID
 } from "@agentic-profile/common";
@@ -96,6 +97,17 @@ export class InMemoryStorage implements Storage {
             throw new ServerError([4],'Update chat history failed to find chat');
         else
             chat.history = history; 
+    }
+
+    async updateChatResolution( key: AgentChatKey, userResolution: ChatResolution | null | undefined, peerResolution: ChatResolution | null | undefined ) {
+        const chat = await this.fetchAgentChat( key );
+        if( !chat )
+            throw new ServerError([4],'Update chat resolution failed to find chat');
+        
+        if( userResolution !== undefined )
+            chat.userResolution = userResolution ?? undefined;
+        if( peerResolution !== undefined )
+            chat.peerResolution = peerResolution ?? undefined;
     }
 
     async fetchAgentChat( key: AgentChatKey ) {

@@ -11,6 +11,7 @@ export default defineConfig({
     target: "esnext",
     external: [
         "express","path","body-parser","depd",
+        "loglevel",
         "@agentic-profile/auth",
         "@agentic-profile/common",
         "@agentic-profile/ai-provider"
