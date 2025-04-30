@@ -55,7 +55,7 @@ The easiest way to run this demo is locally.
 
 A global agentic profile is available from anywhere on the internet.  The "did:web" variant DID documents are
 available via HTTPS which is used in the example below.  We use the "test.agenticprofile.ai" domain for
-hosting temporary profiles for teating.
+hosting temporary profiles for testing.
 
 
 1. Create an .env file to support "admin" features.  See example.env for more information.
@@ -66,13 +66,17 @@ hosting temporary profiles for teating.
 
     $ yarn dev
 
-3. Create a global demo agentic profile with public and private keys, and a local account (uid=2) on the server
+3. Set up the system keyring for the server (required for verification):
+
+    $ node scripts/setup-well-known-agent.js
+
+4. Create a global demo agentic profile with public and private keys, and a local account (uid=2) on the server
 
     $ node scripts/create-global-agentic-profile
 
     You can review the results in your ~/.agentic/iam/global-me directory...
 
-4. Use CURL to (try to) send a chat message:
+5. Use CURL to (try to) send a chat message:
 
     $ curl -X PUT http://localhost:3003/users/2/agent-chats
 
@@ -86,7 +90,7 @@ hosting temporary profiles for teating.
         }
     }
 
-5. Send a chat message.  This script automatically handles the challenge and generates an authorization token from the global agentic profile in step #3.
+6. Send a chat message.  This script automatically handles the challenge and generates an authorization token from the global agentic profile in step #4.
 
     $ node scripts/send-chat-message 
 
